@@ -1,0 +1,39 @@
+{
+    "pages": [
+        "pages/index/main",
+        "pages/shop/main",
+        "pages/mine/main",
+        "pages/childBag/main",
+        "pages/set/main",
+        "pages/mineCard/main",
+        "pages/userCard/main"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fff",
+        "navigationBarTitleText": "百商邦",
+        "navigationBarTextStyle": "black"
+    },
+    "tabBar": {
+        "list": [{
+                "pagePath": "pages/index/main",
+                "text": "百家邦",
+                "iconPath": "/static/image/bjb.png",
+                "selectedIconPath": "/static/image/bjb.png"
+            },
+            {
+                "pagePath": "pages/shop/main",
+                "text": "商家",
+                "iconPath": "/static/image/shop.png",
+                "selectedIconPath": "/static/image/shop.png"
+            },
+            {
+                "pagePath": "pages/mine/main",
+                "text": "我的",
+                "iconPath": "/static/image/mine.png",
+                "selectedIconPath": "/static/image/mine.png"
+            }
+        ],
+        "selectedColor": "#e43949"
+    }
+}
