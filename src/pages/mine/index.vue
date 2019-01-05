@@ -9,7 +9,7 @@
       <div class="phoneNumber">15625568840</div>
     </div>
     <div class="card">
-      <div class="unused" @click="goUrl">
+      <div class="unused" @click="goMineCard">
         <img src="/static/image/weishiyong.png" alt>
         <span>未使用</span>
       </div>
@@ -22,8 +22,8 @@
         <span>已过期</span>
       </div>
     </div>
-    <div class="opinion">
-      <div class="radius-one">
+    <div class="opinion" @click="goOpinion">
+      <div class="radius-one" >
         <div class="yuan">
           <img src="/static/image/yijian.png" alt>
         </div>
@@ -31,7 +31,7 @@
         <span class="more">></span>
       </div>
     </div>
-    <div class="aboutUs">
+    <div class="aboutUs" @click="goAboutUs">
       <div class="radius-one">
         <div class="yuan">
           <img src="/static/image/aboutUs.png" alt>
@@ -65,8 +65,20 @@ export default {
     // console.log(e);
     
     // }
-    goUrl(){
+
+    // 去我的卡券
+    goMineCard(){
       wx.navigateTo({ url: '/pages/mineCard/main' });
+    },
+
+    // 去意见反馈
+    goOpinion(){
+      wx.navigateTo({ url: '/pages/opinion/main' });
+    },
+
+    // 去关于我们
+    goAboutUs(){
+      wx.navigateTo({ url: '/pages/aboutUs/main' });
     }
   }
 };

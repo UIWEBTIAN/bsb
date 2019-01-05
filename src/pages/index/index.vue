@@ -15,31 +15,39 @@
       </swiper>
     </div>
     <!-- 分类 -->
-    <div class="category">
+    <div class="tap-category">
       <ul>
-        <li :class="current == 0?'active':''" data-current="0" @click="select" >推荐</li>
-        <li :class="current == 1?'active':''" data-current="1" @click="select">最新</li>
-        <li :class="current == 2?'active':''" data-current="2" @click="select">人气</li>
-        <li :class="current == 3?'active':''" data-current="3" @click="select">价格</li>
+        <li class="item" :class="{active:selectedIndex==0}"  @click="selectedIndex=0" >推荐</li>
+        <li class="item" :class="{active:selectedIndex==1}"  @click="selectedIndex=1">最新</li>
+        <li class="item" :class="{active:selectedIndex==2}"  @click="selectedIndex=2">人气</li>
+        <li class="item" :class="{active:selectedIndex==3}"  @click="selectedIndex=3">价格</li>
       </ul>
     </div>
-    <!-- 优惠商品 -->
+    <div class="tap-content">
+      <div class="item" v-show="selectedIndex==0">
+            <!-- 优惠商品 -->
     <div class="discounts" @tap="childBag">
       <div class="gift">
         <div class="content">
           <h4>儿童单人乐高体验课礼包</h4>
           <div class="mcdonald">
-            <i></i>
+            <div class="logo">
+            <img src="/static/image/m-icon.png" alt="">
+            </div>
             <span class="shop">[麦当劳]</span>
             <span class="title">麦辣鸡腿堡一个+薯条一份+可乐一杯</span>
           </div>
           <div class="uniq">
-            <i></i>
+            <div class="logo">
+            <img src="/static/image/m-icon.png" alt="">
+          </div>
             <span class="shop">[优衣库]</span>
             <span class="title">麦辣鸡腿堡一个+薯条一份+可乐一杯</span>
           </div>
           <div class="zshiyou">
-            <i></i>
+            <div class="logo">
+            <img src="/static/image/m-icon.png" alt="">
+          </div>
             <span class="shop">[中石油]</span>
             <span class="title">麦辣鸡腿堡一个+薯条一份+可乐一杯</span>
           </div>
@@ -57,18 +65,17 @@
         <div class="content">
           <h4>儿童单人乐高体验课礼包</h4>
           <div class="mcdonald">
-            <i></i>
+            <div class="logo">
+            <img src="/static/image/m-icon.png" alt="">
+          </div>
             <span class="shop">[麦当劳]</span>
             <span class="title">麦辣鸡腿堡一个+薯条一份+可乐一杯</span>
           </div>
           <div class="uniq">
-            <i></i>
-            <span class="shop">[优衣库]</span>
-            <span class="title">麦辣鸡腿堡一个+薯条一份+可乐一杯</span>
+            <div class="logo">
+            <img src="/static/image/m-icon.png" alt="">
           </div>
-          <div class="zshiyou">
-            <i></i>
-            <span class="shop">[中石油]</span>
+            <span class="shop">[优衣库]</span>
             <span class="title">麦辣鸡腿堡一个+薯条一份+可乐一杯</span>
           </div>
         </div>
@@ -80,6 +87,12 @@
         </div>
       </div>
     </div>
+      </div>
+      <div class="item" v-show="selectedIndex==1">一颗牙疼</div>
+      <div class="item" v-show="selectedIndex==2">添添宝贝猪</div>
+      <div class="item" v-show="selectedIndex==3">蚩梦</div>
+    </div>
+
   </div>
 </template>
 
@@ -87,16 +100,13 @@
 export default {
   data:function(){
     return {
-      current:0
+      selectedIndex:0
     }
   },
   methods:{
     childBag(){
       wx.navigateTo({ url: '/pages/childBag/main' });
     },
-    select(e){
-      this.current = e.target.dataset.current
-    }
   }
 }
 </script>
@@ -106,20 +116,21 @@ export default {
   .swiper {
     image{
       width: 100%;
+      height: 100%;
     }
   }
   // 分类
-  .category {
+  .tap-category {
     ul {
       display: flex;
-      height: 110rpx;
+      height: 40px;
       background-color: #fafafa;
       text-align: center;
-      line-height: 110rpx;
+      line-height: 40px;
       li{
         border-right: 2rpx solid #eaeaea;
         flex:4;
-        height: 110rpx;
+        height: 40px;
         color:#4a4a4a;
         :last-child{
           border-right: none;
@@ -133,12 +144,12 @@ export default {
 
   // 优惠商品
   .discounts{
-    height: 400rpx;
+    height: 200px;
     padding: 20rpx;
     .gift{
-      height: 400rpx;
+      height: 200px;
       .content{
-        height: 320rpx;
+        height: 155px;
         background-color: #fffbec;
         border: 4rpx #e43949 solid;
         border-top-left-radius: 20rpx;
@@ -146,19 +157,79 @@ export default {
         h4{
           color:#e43949;
           font-weight: 600;
+          height: 40px;
+          margin-left: 15px;
+          line-height: 40px;
+          font-size: 16px;
+          border-bottom: 1px solid #fad8cf;
         }
         .mcdonald, .uniq, .zshiyou{
-          margin-top: 30rpx;
+          position: relative;
+                  .logo{
+                    position: absolute;
+                    display: inline-block;
+          width: 23px;
+          height: 23px;
+          background-color: #b22923;
+          text-align: center;
+          border-radius: 3px;
+          left:16px;
+          top: 5px;
+          img{
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+          }
+        }
+          margin-top: 8px;
           .shop{
-            font-size: 30rpx;
+            position: absolute;
+            top:5px;
+            font-size: 13px;
           }
           .title{
-            font-size: 30rpx;
+            position: absolute;
+            top:5px;
+            font-size: 13px;
+          }
+        }
+        .mcdonald{
+          .shop{
+            left: 46px;
+          }
+          .title{
+            left: 103px;
+          }
+        }
+        .uniq{
+          .logo{
+            top:37px;
+          }
+          .shop{
+            top:37px;
+            left: 46px;
+          }
+          .title{
+            top:37px;
+            left: 103px;
+          }
+        }
+        .zshiyou{
+          .logo{
+            top:67px;
+          }
+          .shop{
+            top:67px;
+            left: 46px;
+          }
+          .title{
+            top:67px;
+            left: 103px;
           }
         }
       }
       .buy{
-        height: 80rpx;
+        height: 35px;
         background-color: #e43949;
         position: relative;
         border-bottom-left-radius: 20rpx;
@@ -166,7 +237,7 @@ export default {
         .price{
           position: absolute;
           left: 35rpx;
-          line-height: 80rpx;
+          line-height: 35px;
           color: #fff;
           font-size: 30rpx;
           font-weight: 600;
@@ -174,14 +245,14 @@ export default {
         .oldPrice{
           color:#f3b6ba;
           position: absolute;
-          line-height: 80rpx;
+          line-height: 35px;
           left: 167rpx;
           font-size: 24rpx;
         }
         .residue{
           color:#f3b6ba;
           position: absolute;
-          line-height: 80rpx;
+          line-height: 35px;
           left: 297rpx;
           font-size: 24rpx;
         }
@@ -191,8 +262,8 @@ export default {
           right: 3%;
           transform: translateY(-50%);
           width: 180rpx;
-          height: 60rpx;
-          line-height: 60rpx;
+          height: 29px;
+          line-height: 29px;
           background-color: #fff000;
           border-radius: 35rpx;
           font-size: 26rpx;
@@ -205,12 +276,12 @@ export default {
 
   // 售罄样式
   .sellOut{
-    height: 400rpx;
-    padding: 20rpx;
+    height: 200px;
+    padding: 0 20rpx;
     .gift{
-      height: 400rpx;
+      height:200px;
       .content{
-        height: 320rpx;
+        height: 120px;
         background-color: #f7f7f7;
         border: 4rpx #848484 solid;
         border-top-left-radius: 20rpx;
@@ -218,19 +289,67 @@ export default {
         h4{
           color:#848484;
           font-weight: 600;
+          height: 40px;
+          margin-left: 15px;
+          line-height: 40px;
+          font-size: 16px;
+          border-bottom: 1px solid #e2e2e2;
         }
-        .mcdonald, .uniq, .zshiyou{
-          margin-top: 30rpx;
+        .mcdonald, .uniq{
+          position: relative;
+          .logo{
+            position: absolute;
+            left:16px;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #b22923;
+            text-align: center;
+            border-radius: 3px;
+            top:5px;
+          // position: absolute;
+          img{
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+          }
+        }
+          margin-top: 8px;
           .shop{
-            font-size: 30rpx;
+            position: absolute;
+            top:5px;
+            font-size: 13px;
           }
           .title{
-            font-size: 30rpx;
+            position: absolute;
+            top:5px;
+            font-size: 13px;
+          }
+        }
+        .mcdonald{
+          .shop{
+            left: 46px;
+          }
+          .title{
+            left: 103px;
+          }
+        }
+        .uniq{
+          .logo{
+            top:35px;
+          }
+          .shop{
+            top:35px;
+            left: 46px;
+          }
+          .title{
+            top:35px;
+            left: 103px;
           }
         }
       }
       .buy{
-        height: 80rpx;
+        height: 35px;
         background-color: #848484;
         position: relative;
         border-bottom-left-radius: 20rpx;
@@ -238,7 +357,7 @@ export default {
         .price{
           position: absolute;
           left: 35rpx;
-          line-height: 80rpx;
+          line-height: 35px;
           color: #fff;
           font-size: 30rpx;
           font-weight: 600;
@@ -246,14 +365,14 @@ export default {
         .oldPrice{
           color:#cccccc;
           position: absolute;
-          line-height: 80rpx;
+          line-height: 35px;
           left: 167rpx;
           font-size: 24rpx;
         }
         .residue{
           color:#cccccc;
           position: absolute;
-          line-height: 80rpx;
+          line-height: 35px;
           left: 297rpx;
           font-size: 24rpx;
         }
@@ -263,8 +382,8 @@ export default {
           right: 3%;
           transform: translateY(-50%);
           width: 180rpx;
-          height: 60rpx;
-          line-height: 60rpx;
+          height: 29px;
+          line-height: 29px;
           background-color: #969696;
           border-radius: 35rpx;
           font-size: 26rpx;

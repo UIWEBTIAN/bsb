@@ -6,7 +6,10 @@
         "pages/childBag/main",
         "pages/set/main",
         "pages/mineCard/main",
-        "pages/userCard/main"
+        "pages/userCard/main",
+        "pages/changeName/main",
+        "pages/opinion/main",
+        "pages/aboutUs/main"
     ],
     "window": {
         "backgroundTextStyle": "light",

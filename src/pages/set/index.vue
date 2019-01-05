@@ -4,9 +4,9 @@
       <span class="update">修改头像</span>
       <span class="more">></span>
     </div>
-    <div class="name">
-      <span class="whoName">昵称 </span>
-      <span class="yourName">一颗牙疼</span>
+    <div class="name"  @click="goSetName">
+      <span class="whoName" >昵称 </span>
+      <span class="yourName">{{yourName}}</span>
       <span class="more">></span>
     </div>
     <div class="phone">
@@ -26,7 +26,17 @@
 
 <script>
 export default {
-  
+  data:function(){
+    return {
+      yourName:""
+    }
+  },
+  methods:{
+    goSetName(e){
+      console.log(e);
+      wx.navigateTo({ url: '/pages/changeName/main' });
+    },
+  }
 }
 </script>
 
