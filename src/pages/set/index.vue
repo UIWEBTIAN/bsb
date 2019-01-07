@@ -36,6 +36,15 @@ export default {
       console.log(e);
       wx.navigateTo({ url: '/pages/changeName/main' });
     },
+  },
+  onLoad:function(){
+    wx.getStorage({
+      key: 'name',
+      success: (res) => {
+        this.yourName = res.data
+      }
+    })
+    
   }
 }
 </script>

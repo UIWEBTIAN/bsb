@@ -129,6 +129,38 @@
           <span class="hide">满100元可用,不可叠加使用</span>
         </div>
       </div>
+      <div class="giftBag">
+        <div class="header">
+          <div class="logo">
+            <img src="/static/image/m-icon.png" alt="">
+          </div>
+          <span class="title">麦辣鸡腿堡1个+薯条一份</span>
+          <span class="detail">详情&nbsp&nbsp></span>
+          <div class="time">有效期至 : 2019.01.18</div>
+        </div>
+        <div class="information">
+          <ul>
+            <li>
+              商家名称 :
+              <span>麦当劳(天和百货店)</span>
+            </li>
+            <li>
+              商家地址 :
+              <span>凤来路西域文化广场天和百货</span>
+            </li>
+            <li>
+              商家时间 :
+              <span>09:30-22:30</span>
+            </li>
+          </ul>
+          <span class="distance">2.8km</span>
+        </div>
+        <div class="footer">
+          <span class="show">使用条件 : 仅限于周一到周五使用,节假日除外,单笔消费</span>&nbsp&nbsp
+          <span @tap="show" class="more">∨</span>
+          <span class="hide">满100元可用,不可叠加使用</span>
+        </div>
+      </div>
     </div>
     <div class="buy">
       <span class="money">¥39.90</span>
@@ -160,7 +192,7 @@ export default {
     // console.log(e);//{scrollTop:99}
     if(e.scrollTop>100){
       this.scrollTop = e.scrollTop
-      console.log(this.scrollTop);
+      // console.log(this.scrollTop);
       
       
     }
@@ -177,18 +209,19 @@ page {
 .index {
   width: 100%;
   height: 100%;
-  padding: 22rpx;
+  padding:22rpx 22rpx 100rpx 22rpx;
   box-sizing: border-box;
   background-color: #efeff4;
   position: relative;
+  margin-bottom: 200px;
   // 大盒子
   .content-box {
     background-color: #fff;
-    padding: 22rpx;
+    padding:22rpx 22rpx 200rpx 22rpx;
     box-sizing: border-box;
     position: relative;
     z-index: 10;
-    margin-bottom: 60px;
+    
     .giftBag {
       background-color: #fafafa;
       margin-bottom: 20rpx;
@@ -269,10 +302,12 @@ page {
         border-bottom-left-radius: 10rpx;
         .show {
           margin-left: 20rpx;
-          font-size: 12px
+          font-size: 11px
         }
         .more {
-          font-size: 40rpx;
+          margin-top: 6px;
+          margin-left: 15px;
+          font-size: 14px;
         }
         .hide {
           display: none;

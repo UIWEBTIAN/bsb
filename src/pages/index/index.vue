@@ -20,7 +20,10 @@
         <li class="item" :class="{active:selectedIndex==0}"  @click="selectedIndex=0" >推荐</li>
         <li class="item" :class="{active:selectedIndex==1}"  @click="selectedIndex=1">最新</li>
         <li class="item" :class="{active:selectedIndex==2}"  @click="selectedIndex=2">人气</li>
-        <li class="item" :class="{active:selectedIndex==3}"  @click="selectedIndex=3">价格</li>
+        <li class="item" :class="{active:selectedIndex==3}"  @click="selectedIndex=3;isUp=!isUp">价格
+          <i class="iconfont up" :class="{activeTwo:isUp}">&#xe74c;</i>
+          <i class="iconfont down" :class="{activeTwo:!isUp}">&#xe7ff;</i>
+        </li>
       </ul>
     </div>
     <div class="tap-content">
@@ -100,7 +103,10 @@
 export default {
   data:function(){
     return {
-      selectedIndex:0
+      // 选中的li
+      selectedIndex:0,
+      // 箭头
+      isUp:false
     }
   },
   methods:{
@@ -132,10 +138,32 @@ export default {
         flex:4;
         height: 40px;
         color:#4a4a4a;
-        :last-child{
-          border-right: none;
+        
+        .iconfont{
+          // display: inline-block;
+          width: 20rpx;
+          height: 15rpx;
+          position: absolute;
+          top:-2px;
+          right: 18px;
+          color:#4a4a4a;
         }
+        .down{
+            top: 3px;
+          }
       }
+      li.active{
+        .activeTwo{
+            color: red;
+          }
+      }
+      li:last-child{
+        position: relative;
+          border-right: none;
+          display: flex;
+          justify-content: center;
+          
+        }
       .active {
           background-color: #eaeaea;
         }

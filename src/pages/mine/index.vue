@@ -1,40 +1,81 @@
 <template>
   <div class="index">
     <div class="header">
-      <img src="/static/image/beijing.png" alt class="bgColor">
-      <img src="/static/image/set.png" alt class="set">
-      
-      <img src="/static/image/touxiang.png" alt class="icon" @tap="login">
+      <img
+        src="/static/image/beijing.png"
+        alt
+        class="bgColor"
+      >
+      <img
+        src="/static/image/set.png"
+        alt
+        class="set"
+        @click="goSet"
+      >
+
+      <img
+        src="/static/image/touxiang.png"
+        alt
+        class="icon"
+        @tap="login"
+      >
       <div class="name">一颗牙疼</div>
       <div class="phoneNumber">15625568840</div>
     </div>
     <div class="card">
-      <div class="unused" @click="goMineCard">
-        <img src="/static/image/weishiyong.png" alt>
+      <div
+        class="unused"
+        @click="goMineCard"
+      >
+        <img
+          src="/static/image/weishiyong.png"
+          alt
+        >
         <span>未使用</span>
       </div>
-      <div class="used">
-        <img src="/static/image/user.png" alt>
+      <div
+        class="used"
+        @click="callNumber"
+      >
+        <img
+          src="/static/image/user.png"
+          alt
+        >
         <span>已使用</span>
       </div>
-      <div class="dated">
-        <img src="/static/image/yiguoqi.png" alt>
+      <div class="dated" @click="setAddress">
+        <img
+          src="/static/image/yiguoqi.png"
+          alt
+        >
         <span>已过期</span>
       </div>
     </div>
-    <div class="opinion" @click="goOpinion">
-      <div class="radius-one" >
+    <div
+      class="opinion"
+      @click="goOpinion"
+    >
+      <div class="radius-one">
         <div class="yuan">
-          <img src="/static/image/yijian.png" alt>
+          <img
+            src="/static/image/yijian.png"
+            alt
+          >
         </div>
         <span class="content">意见反馈</span>
         <span class="more">></span>
       </div>
     </div>
-    <div class="aboutUs" @click="goAboutUs">
+    <div
+      class="aboutUs"
+      @click="goAboutUs"
+    >
       <div class="radius-one">
         <div class="yuan">
-          <img src="/static/image/aboutUs.png" alt>
+          <img
+            src="/static/image/aboutUs.png"
+            alt
+          >
         </div>
         <span class="content">关于我们</span>
         <span class="more">></span>
@@ -45,40 +86,64 @@
 
 <script>
 export default {
-  data:function(){
-    return {
-      
-    }
+  data: function() {
+    return {};
   },
-  methods:{
+  methods: {
     // getUserInfo(e){
     //   // wx.getUserInfo({
     //   //   withCredentials: false,
     //   //   success: res => {
     //   //     // console.log(res.userInfo);
-          
+
     //   //     this.userInfo = res.userInfo.avatarUrl;
     //   //     console.log(this.userInfo);
     //   //   },
 
     //   // });
     // console.log(e);
-    
+
     // }
 
     // 去我的卡券
-    goMineCard(){
-      wx.navigateTo({ url: '/pages/mineCard/main' });
+    goMineCard() {
+      wx.navigateTo({ url: "/pages/mineCard/main" });
     },
 
     // 去意见反馈
-    goOpinion(){
-      wx.navigateTo({ url: '/pages/opinion/main' });
+    goOpinion() {
+      wx.navigateTo({ url: "/pages/opinion/main" });
     },
 
     // 去关于我们
-    goAboutUs(){
-      wx.navigateTo({ url: '/pages/aboutUs/main' });
+    goAboutUs() {
+      wx.navigateTo({ url: "/pages/aboutUs/main" });
+    },
+
+    // 去设置
+    goSet() {
+      wx.navigateTo({ url: "/pages/set/main" });
+    },
+    // 打电话
+    callNumber() {
+      wx.makePhoneCall({
+        phoneNumber: "15916967633" // 仅为示例，并非真实的电话号码
+      });
+    },
+    // 修改地址
+    setAddress(){
+      wx.chooseAddress({
+      success:(res) => {
+    console.log(res.userName)
+    console.log(res.postalCode)
+    console.log(res.provinceName)
+    console.log(res.cityName)
+    console.log(res.countyName)
+    console.log(res.detailInfo)
+    console.log(res.nationalCode)
+    console.log(res.telNumber)
+  }
+})
     }
   }
 };
