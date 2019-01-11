@@ -86,16 +86,40 @@
 </template>
 
 <script>
+import hxios from '../../../src/utils/hxios.js'
 export default {
   data: function() {
     return {
-      selectedIndex: 0
+      // 选中的索引
+      selectedIndex: 0,
+      // 用户ID
+      userID:0
     };
   },
   methods: {
     goUseCard() {
       wx.navigateTo({ url: "/pages/userCard/main" });
     }
+  },
+  onShow(){
+    // 获取本地存储的用户ID
+    wx.getStorage({
+      key: '用户ID',
+      success: (res) => {
+        // 用户ID
+        this.userID = res.data
+        console.log(this.userID);
+        
+        hxios.post('/member_item/itemlist',{memberId:this.userID,status:'used'}).then(res=>{
+      console.log(res);
+      
+    })
+      },
+      fail: () => { },
+      complete: () => { }
+    })
+    // 发请求
+
   }
 };
 </script>

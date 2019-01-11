@@ -4,8 +4,11 @@
       <span class="update">修改头像</span>
       <span class="more">></span>
     </div>
-    <div class="name"  @click="goSetName">
-      <span class="whoName" >昵称 </span>
+    <div
+      class="name"
+      @click="goSetName"
+    >
+      <span class="whoName">昵称 </span>
       <span class="yourName">{{yourName}}</span>
       <span class="more">></span>
     </div>
@@ -26,113 +29,126 @@
 
 <script>
 export default {
-  data:function(){
+  data: function() {
     return {
-      yourName:""
+      yourName: ""
+    };
+  },
+  methods: {
+    goSetName(e) {
+      // console.log(e);
+      wx.navigateTo({ url: "/pages/changeName/main" });
+      // wx.navigateBack({
+      //   delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+      // });
     }
   },
-  methods:{
-    goSetName(e){
-      console.log(e);
-      wx.navigateTo({ url: '/pages/changeName/main' });
-    },
+  onLoad: function() {
+    wx.getStorage({
+      key: "name",
+      success: res => {
+        this.yourName = res.data;
+      }
+    });
+  },
+  onUnload(){
+    wx.switchTab({ url: '/pages/mine/main' });
   }
-}
+};
 </script>
 
 <style lang="less">
-  page {
-    background-color: #efeff4;
-    .index {
-      .setHeader{
-        position: relative;
-        margin-top: 30rpx;
-        background-color: #fff;
-        height: 108rpx;
-        line-height: 108rpx;
-        .update{
-          color:#000000;
-          margin-left: 113rpx;
-        }
-        .more {
-          position: absolute;
-          right: 30rpx;
-          color:#c7c7cc;
-          font-size: 40rpx;
-        }
+page {
+  background-color: #efeff4;
+  .index {
+    .setHeader {
+      position: relative;
+      margin-top: 30rpx;
+      background-color: #fff;
+      height: 108rpx;
+      line-height: 108rpx;
+      .update {
+        color: #000000;
+        margin-left: 113rpx;
       }
-      .name{
-        position: relative;
-        margin-top: 30rpx;
-        background-color: #fff;
-        height: 85rpx;
-        line-height: 85rpx;
-        border-bottom: 1px solid #e5e5e5;
-        .whoName{
-          position: absolute;
-          left:30rpx;
-        }
-        .yourName{
-          position: absolute;
-          left:212rpx;
-        }
-        .more{
-          position: absolute;
-          right: 30rpx;
-          color:#c7c7cc;
-          font-size: 40rpx;
-        }
+      .more {
+        position: absolute;
+        right: 30rpx;
+        color: #c7c7cc;
+        font-size: 40rpx;
       }
-      .phone{
-        position: relative;
-        background-color: #fff;
-        height: 85rpx;
-        line-height: 85rpx;
-        .telephoneNumber{
-          position: absolute;
-          left:30rpx;
-        }
-        .yourNumber{
-          position: absolute;
-          left:212rpx;
-        }
-        .more{
-          position: absolute;
-          right: 30rpx;
-          color:#c7c7cc;
-          font-size: 40rpx;
-        }
+    }
+    .name {
+      position: relative;
+      margin-top: 30rpx;
+      background-color: #fff;
+      height: 85rpx;
+      line-height: 85rpx;
+      border-bottom: 1px solid #e5e5e5;
+      .whoName {
+        position: absolute;
+        left: 30rpx;
       }
-      .password{
-        position: relative;
-        margin-top: 30rpx;
-        background-color: #fff;
-        height: 85rpx;
-        line-height: 85rpx;
-        .setPwd{
-          position: absolute;
-          left:30rpx;
-        }
-        .more{
-          position: absolute;
-          right: 30rpx;
-          color:#c7c7cc;
-          font-size: 40rpx;
-        }
+      .yourName {
+        position: absolute;
+        left: 212rpx;
       }
-      .logout{
-        position: fixed;
-        bottom:20rpx;
-        width: 100%;
-        padding-left: 20rpx;
-        padding-right: 20rpx;
-        box-sizing: border-box;
-        button {
-          background-color:#e43949;
-          color: #fff;
-        }
+      .more {
+        position: absolute;
+        right: 30rpx;
+        color: #c7c7cc;
+        font-size: 40rpx;
+      }
+    }
+    .phone {
+      position: relative;
+      background-color: #fff;
+      height: 85rpx;
+      line-height: 85rpx;
+      .telephoneNumber {
+        position: absolute;
+        left: 30rpx;
+      }
+      .yourNumber {
+        position: absolute;
+        left: 212rpx;
+      }
+      .more {
+        position: absolute;
+        right: 30rpx;
+        color: #c7c7cc;
+        font-size: 40rpx;
+      }
+    }
+    .password {
+      position: relative;
+      margin-top: 30rpx;
+      background-color: #fff;
+      height: 85rpx;
+      line-height: 85rpx;
+      .setPwd {
+        position: absolute;
+        left: 30rpx;
+      }
+      .more {
+        position: absolute;
+        right: 30rpx;
+        color: #c7c7cc;
+        font-size: 40rpx;
+      }
+    }
+    .logout {
+      position: fixed;
+      bottom: 20rpx;
+      width: 100%;
+      padding-left: 20rpx;
+      padding-right: 20rpx;
+      box-sizing: border-box;
+      button {
+        background-color: #e43949;
+        color: #fff;
       }
     }
   }
-
+}
 </style>

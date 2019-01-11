@@ -20,14 +20,16 @@ export default {
   methods: {
     yourName(e) {
       this.name = e.target.value;
-      // console.log(e.target.value);
     },
     // 保存
     save() {
-      wx.navigateTo({ url: "/pages/set/main" });
+      wx.navigateTo({ url: "/pages/set/main"});
+      wx.setStorage({
+      key: 'name',
+      data: this.name
+    });
     }
   },
-  mounted() {}
 };
 </script>
 
@@ -42,6 +44,11 @@ page {
   height: 85rpx;
   line-height: 85rpx;
   border-bottom: 1px solid #e5e5e5;
+  .iconfont{
+    width: 50px;
+    height: 50px;
+    background-color: #e43949
+  }
   .whoName {
     position: absolute;
     left: 30rpx;

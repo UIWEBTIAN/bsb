@@ -1,42 +1,94 @@
 <template>
   <div class="index">
     <div class="header">
-      <img src="/static/image/beijing.png" alt class="bgColor">
-      <img src="/static/image/set.png" alt class="set">
-      
-      <img src="/static/image/touxiang.png" alt class="icon" @tap="login">
-      <div class="name">一颗牙疼</div>
-      <div class="phoneNumber">15625568840</div>
+      <img
+        src="/static/image/beijing.png"
+        alt
+        class="bgColor"
+      >
+      <img
+        src="/static/image/set.png"
+        alt
+        class="set"
+        @click="goSet"
+      >
+      <button open-type="getUserInfo" @getuserinfo="userInfo"> <img
+          :src="userImg"
+          alt
+          class="icon"
+          @tap="login"
+        ></button>
+
+      <div class="name">{{userName}}</div>
     </div>
     <div class="card">
-      <div class="unused" @click="goMineCard">
-        <img src="/static/image/weishiyong.png" alt>
+      <div
+        class="unused"
+        @click="goMineCard"
+      >
+        <img
+          src="/static/image/weishiyong.png"
+          alt
+        >
         <span>未使用</span>
       </div>
       <div class="used">
-        <img src="/static/image/user.png" alt>
+        <img
+          src="/static/image/user.png"
+          alt
+        >
         <span>已使用</span>
       </div>
       <div class="dated">
-        <img src="/static/image/yiguoqi.png" alt>
+        <img
+          src="/static/image/yiguoqi.png"
+          alt
+        >
         <span>已过期</span>
       </div>
     </div>
-    <div class="opinion" @click="goOpinion">
-      <div class="radius-one" >
+    <div
+      class="opinion"
+      @click="goOpinion"
+    >
+      <div class="radius-one">
         <div class="yuan">
-          <img src="/static/image/yijian.png" alt>
+          <img
+            src="/static/image/yijian.png"
+            alt
+          >
         </div>
         <span class="content">意见反馈</span>
         <span class="more">></span>
       </div>
     </div>
-    <div class="aboutUs" @click="goAboutUs">
+    <div
+      class="aboutUs"
+      @click="goAboutUs"
+    >
       <div class="radius-one">
         <div class="yuan">
-          <img src="/static/image/aboutUs.png" alt>
+          <img
+            src="/static/image/aboutUs.png"
+            alt
+          >
         </div>
         <span class="content">关于我们</span>
+        <span class="more">></span>
+      </div>
+    </div>
+    <div
+      class="shopMain"
+      @click="goShopMain"
+    >
+      <div class="radius-one">
+        <div class="yuan">
+          <img
+            src="/static/image/aboutUs.png"
+            alt
+          >
+        </div>
+        <span class="content">商家入口</span>
         <span class="more">></span>
       </div>
     </div>
@@ -44,41 +96,111 @@
 </template>
 
 <script>
+import hxios from '../../../src/utils/hxios.js'
 export default {
-  data:function(){
+  data: function() {
     return {
-      
-    }
+      // 用户头像
+      userImg:"http://img3.imgtn.bdimg.com/it/u=1248345049,109226570&fm=26&gp=0.jpg",
+      // 用户昵称
+      userName:"用户名",
+      code:""
+    };
   },
-  methods:{
+  onLoad(){
+    wx.login({
+      success: res => {
+        console.log(res);
+        this.code = res.code;
+        hxios.post('/wechat_mini/userlogin',{code:this.code}).then(res=>{
+          console.log(res);
+          wx.setStorage({
+            key: '用户ID',
+            data: res.data.data.memberId
+          });
+        })
+        // wx.request({
+        //   url: 'https://api.weixin.qq.com/sns/jscode2session?appid=wx03a96073c8a1d46b&secret=47eb12299ba5261c4b0f3d91e5fdfd62&js_code='+this.code+'&grant_type=authorization_code', //开发者服务器接口地址"
+        //   data: 'data', //请求的参数",
+        //   method: 'GET',
+        //   dataType: 'json', //如果设为json，会尝试对返回的数据做一次 JSON.parse
+        //   success: res => {
+        //     console.log(res);
+        //     // wx.getUserInfo({
+        //     //   withCredentials: false,
+        //     //   success: res => {
+        //     //     console.log(res);
+                
+        //     //   },
+        //     //   fail: () => {},
+        //     //   complete: () => {}
+        //     // });
+            
+        //   },
+        //   fail: () => {},
+        //   complete: () => {}
+        // });
+        
+      },
+      fail: () => {},
+      complete: () => {}
+    });
+  },
+  methods: {
+    getPhoneNumber(e){
+      console.log(e);
+      
+    },
     // getUserInfo(e){
     //   // wx.getUserInfo({
     //   //   withCredentials: false,
     //   //   success: res => {
     //   //     // console.log(res.userInfo);
-          
+
     //   //     this.userInfo = res.userInfo.avatarUrl;
     //   //     console.log(this.userInfo);
     //   //   },
 
     //   // });
     // console.log(e);
-    
+
     // }
 
+    // 获取用户信息
+    userInfo(e){
+      console.log(e);
+      
+      // console.log(e.target.userInfo);
+      // 用户头像
+      this.userImg = e.target.userInfo.avatarUrl
+      // 用户名
+      this.userName = e.target.userInfo.nickName
+      
+    },
+
     // 去我的卡券
-    goMineCard(){
-      wx.navigateTo({ url: '/pages/mineCard/main' });
+    goMineCard() {
+      wx.navigateTo({ url: "/pages/mineCard/main" });
     },
 
     // 去意见反馈
-    goOpinion(){
-      wx.navigateTo({ url: '/pages/opinion/main' });
+    goOpinion() {
+      wx.navigateTo({ url: "/pages/opinion/main" });
     },
 
     // 去关于我们
-    goAboutUs(){
-      wx.navigateTo({ url: '/pages/aboutUs/main' });
+    goAboutUs() {
+      wx.navigateTo({ url: "/pages/aboutUs/main" });
+    },
+
+    // 去商家端
+    goShopMain() {
+      wx.navigateTo({ url: "/pages/shopsLogin/main" });
+    },
+
+    // 去设置
+    goSet() {
+      wx.navigateTo({ url: "/pages/set/main" });
     }
   }
 };
@@ -106,15 +228,25 @@ page {
       width: 20px;
       height: 20px;
     }
-    .icon {
-      position: absolute;
+    button{
+      width: 75px;
+      height: 75px;
       border-radius: 50%;
       top: 45px;
       left: 50%;
+      position: absolute;
       transform: translateX(-50%);
+          .icon {
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
       width: 75px;
       height: 75px;
     }
+    }
+
     .name,
     .phoneNumber {
       position: absolute;
@@ -173,7 +305,8 @@ page {
     }
   }
   .opinion,
-  .aboutUs {
+  .aboutUs,
+  .shopMain {
     position: absolute;
     left: 13px;
     top: 334px;
@@ -215,6 +348,18 @@ page {
   }
   .aboutUs {
     top: 395px;
+    .radius-one {
+      .yuan {
+        background-color: #7d95fd;
+        img {
+          width: 5px;
+          height: 12px;
+        }
+      }
+    }
+  }
+  .shopMain {
+    top: 456px;
     .radius-one {
       .yuan {
         background-color: #7d95fd;
