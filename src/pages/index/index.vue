@@ -79,7 +79,7 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button>购买礼包</button>
+              <button @click="buyGift">购买礼包</button>
             </div>
           </div>
         </div>
@@ -246,13 +246,35 @@ export default {
       
 
     },
-    watchImg(index){
-     
-      wx.previewImage({
-        current:this.swiperList[index].img,
-        urls:this.swiperList//需要预览的图片链接列表,
-      });
+    // 购买礼包
+    buyGift(){
+      wx.getStorage({
+        key: 'token',
+        success: (res) => {
+          console.log(res.data)
+        },
+        fail: () => { 
+          wx.showModal({
+            title: '提示', //提示的标题,
+            content: '没有登录,先去登录', //提示的内容,
+            showCancel: true, //是否显示取消按钮,
+            cancelText: '取消', //取消按钮的文字，默认为取消，最多 4 个字符,
+            cancelColor: '#000000', //取消按钮的文字颜色,
+            confirmText: '确定', //确定按钮的文字，默认为取消，最多 4 个字符,
+            confirmColor: '#3CC51F', //确定按钮的文字颜色,
+            success: res => {
+              if (res.confirm) {
+                wx.switchTab({ url: '/pages/mine/main' });
+              } else if (res.cancel) {
+                console.log('用户点击取消')
+              }
+            }
+          });
+        },
+        complete: () => { }
+      })
     }
+
   },
   onLoad() {
       // 页面加载的时候.默认索引等于0

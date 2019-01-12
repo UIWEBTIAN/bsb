@@ -28,7 +28,11 @@
           @click="callNumber"
         >
       </div>
-      <div class="shopInfomation">查看商家介绍</div>
+      <div class="footer">
+        <div class="sendFriend">转赠给朋友</div>
+        <div class="shopInfomation">查看商家介绍</div>
+      </div>
+
       <div class="logo">
         <img
           src="/static/image/touxiang.png"
@@ -205,12 +209,26 @@ page {
         height: 16px;
       }
     }
-    .shopInfomation {
+    .footer {
+      display: flex;
       height: 55px;
-      text-align: center;
-      line-height: 55px;
-      color: #e43949;
+      .sendFriend {
+        flex: 1;
+        height: 55px;
+        text-align: center;
+        line-height: 55px;
+        color: #676767;
+        border-right: 1px solid #e6e6e6;
+      }
+      .shopInfomation {
+        flex: 1;
+        height: 55px;
+        text-align: center;
+        line-height: 55px;
+        color: #e43949;
+      }
     }
+
     .logo {
       position: absolute;
       width: 45px;

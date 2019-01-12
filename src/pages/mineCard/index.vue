@@ -10,8 +10,20 @@
     <div class="tap-content">
       <div class="item noUse" v-show="selectedIndex==0">
         <div class="content-box">
-          <div class="giftBag">
-            <div class="header">
+          <div class="giftBag" v-for="(item, index) in usable" :key="index">
+            <div class="header" @click="goCardDetail(index)">
+              <i></i>
+              <span class="title">[{{item.merchantName}}]</span><span class="rule">{{item.itemTitle}}</span>
+              <img :src="item.merchantLogo" alt>
+              <div class="time">有效期至 : {{item.itemDeadline}}</div>
+            </div>
+            <div class="footer">
+              <span class="show">使用条件 : {{item.itemRule}}</span>&nbsp&nbsp
+              <span @tap="show" class="more">∨</span>
+            </div>
+          </div>
+          <!-- <div class="giftBag">
+            <div class="header" @click="goCardDetail">
               <i></i>
               <span class="title">[麦当劳] 麦辣鸡腿堡1个+薯条一份</span>
               <img src="/static/image/qrCode.png" alt>
@@ -24,7 +36,7 @@
             </div>
           </div>
           <div class="giftBag">
-            <div class="header">
+            <div class="header" @click="goCardDetail">
               <i></i>
               <span class="title">[麦当劳] 麦辣鸡腿堡1个+薯条一份</span>
               <img src="/static/image/qrCode.png" alt>
@@ -35,25 +47,12 @@
               <span @tap="show" class="more">∨</span>
               <span class="hide">满100元可用,不可叠加使用</span>
             </div>
-          </div>
-          <div class="giftBag">
-            <div class="header">
-              <i></i>
-              <span class="title">[麦当劳] 麦辣鸡腿堡1个+薯条一份</span>
-              <img src="/static/image/qrCode.png" alt>
-              <div class="time">有效期至 : 2019.01.18</div>
-            </div>
-            <div class="footer">
-              <span class="show">使用条件 : 仅限于周一到周五使用,节假日除外,单笔消费</span>&nbsp&nbsp
-              <span @tap="show" class="more">∨</span>
-              <span class="hide">满100元可用,不可叠加使用</span>
-            </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="item use" v-show="selectedIndex==1">
         <div class="giftBag">
-          <div class="header">
+          <div class="header" @click="goCardDetail">
             <i></i>
             <span class="title">[麦当劳] 麦辣鸡腿堡1个+薯条一份</span>
             <img src="/static/image/use.png" alt>
@@ -68,7 +67,7 @@
       </div>
       <div class="item updated" v-show="selectedIndex==2">
         <div class="giftBag">
-          <div class="header">
+          <div class="header" @click="goCardDetail">
             <i></i>
             <span class="title">[麦当劳] 麦辣鸡腿堡1个+薯条一份</span>
             <img src="/static/image/updated.png" alt>
@@ -93,12 +92,22 @@ export default {
       // 选中的索引
       selectedIndex: 0,
       // 用户ID
-      userID:0
+      userID:0,
+      // 未使用卡券
+      usable:[],
+      // 消费卡券ID
+      consumeId:[],
+      // 消费码
+      consumeCode:[]
     };
   },
   methods: {
     goUseCard() {
       wx.navigateTo({ url: "/pages/userCard/main" });
+    },
+    // 去卡券详情页
+    goCardDetail(index){
+      wx.navigateTo({ url: '/pages/giftBagDetail/main?consumeId='+this.consumeId[index]});
     }
   },
   onShow(){
@@ -108,11 +117,22 @@ export default {
       success: (res) => {
         // 用户ID
         this.userID = res.data
-        console.log(this.userID);
+        // console.log(this.userID);
         
-        hxios.post('/member_item/itemlist',{memberId:this.userID,status:'used'}).then(res=>{
-      console.log(res);
-      
+        hxios.post('/member_consume/itemlist',{memberId:this.userID,status:'usable'}).then(res=>{
+          // 未使用卡券
+          this.usable = res.data.data;
+          
+          let arr = [];
+          let array = []
+          this.usable.forEach(element => {
+            arr.push(element.consumeId)
+            array.push(element.consumeCode)
+          });
+          // 消费卡券ID
+          this.consumeId = arr;
+          // 消费码
+          this.consumeCode = array 
     })
       },
       fail: () => { },
@@ -167,6 +187,13 @@ ul {
           color: #222222;
           top: 15rpx;
         }
+        .rule{
+          position: absolute;
+          left: 73px;
+          font-size: 30rpx;
+          color: #222222;
+          top: 15rpx;
+        }
         img {
           position: absolute;
           top: 15rpx;
@@ -191,8 +218,10 @@ ul {
         border-bottom-right-radius: 10rpx;
         border-bottom-left-radius: 10rpx;
         position: relative;
+        padding: 0 20rpx;
+        box-sizing: border-box;
         .show {
-          margin-left: 20rpx;
+          
         }
         .more {
           font-size: 40rpx;

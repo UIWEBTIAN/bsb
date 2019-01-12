@@ -8,6 +8,7 @@
         class="giftBag"
         v-for="(item, index) in giftDetail"
         :key="index"
+        @click="gocardDetail(index)"
       >
         <div class="header">
           <div class="logo">
@@ -19,7 +20,6 @@
           <span class="title">{{item.Title}}</span>
           <span
             class="detail"
-            @click="gocardDetail(index)"
           >详情&nbsp&nbsp></span>
           <div class="time">有效期至 : {{item.itemDeadline}}</div>
         </div>

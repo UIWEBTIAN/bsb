@@ -20,7 +20,9 @@
         "pages/shopsUse/main",
         "pages/shopsActive/main",
         "pages/userPwd/main",
-        "pages/map/main"
+        "pages/map/main",
+        "pages/friendCard/main",
+        "pages/cardSuccess/main"
     ],
     "window": {
         "backgroundTextStyle": "light",

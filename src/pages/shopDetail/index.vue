@@ -333,10 +333,14 @@ export default {
     }
   },
   onLoad(option){
+    console.log(option);
+    
     // 商户ID
       this.shopID = parseInt(option.shopID)
       // 商户详情请求
       hxios.post('/merchant/merinfo',{merId:this.shopID}).then(res=>{
+        console.log(res);
+        
       // 商家详情
       this.shopDetail = res.data.data
       // 商家经度
@@ -361,7 +365,7 @@ export default {
         // console.log(res);
         // 商家图文描述
         this.shopImgText = res.data.data.content
-        console.log(this.shopImgText);
+        // console.log(this.shopImgText);
         
         
       })

@@ -21,8 +21,14 @@
         >
       </div>
       <div class="shopInfomation">
-        <div class="left" @click="goShopDetail">商家详情</div>
-        <div class="right" @click="openMap">商家地图</div>
+        <div
+          class="left"
+          @click="goShopDetail"
+        >商家详情</div>
+        <div
+          class="right"
+          @click="openMap"
+        >商家地图</div>
         <span></span>
       </div>
       <div class="logo">
@@ -39,65 +45,107 @@
 </template>
 
 <script>
-import hxios from '../../../src/utils/hxios.js'
+import hxios from "../../../src/utils/hxios.js";
 export default {
-  data:function(){
+  data: function() {
     return {
       // 卡券Id
-      itemid:0,
+      itemid: 0,
       // 卡券详情
-      cardDetail:{},
+      cardDetail: {},
       // 商户位置经度
-      merchantLon:0,
+      merchantLon: 0,
       // 商户位置纬度
-      merchantLat:0,
+      merchantLat: 0,
       // 商户地址
-      address:"",
+      address: "",
       // 商户电话
-      phoneNumber:"",
+      phoneNumber: "",
       // 商户名
-      shopName:""
-    }
+      shopName: "",
+      // 商户ID
+      shopID: 0,
+      // 会员ID
+      memberID: 0,
+      // 消费卡券ID
+      consumeID: 0
+    };
   },
-  methods:{
+  methods: {
     // 打电话
-    callNumber(){
+    callNumber() {
       wx.makePhoneCall({ phoneNumber: this.phoneNumber });
     },
     // 打开地图
-    openMap(){
-      wx.navigateTo({ url: '/pages/map/main?merchantLon='+ this.merchantLon+"&merchantLat="+this.merchantLat+"&address="+this.address+"&shopName="+this.shopName});
+    openMap() {
+      wx.navigateTo({
+        url:
+          "/pages/map/main?merchantLon=" +
+          this.merchantLon +
+          "&merchantLat=" +
+          this.merchantLat +
+          "&address=" +
+          this.address +
+          "&shopName=" +
+          this.shopName
+      });
     },
     // 去商家详情页
-    goShopDetail(){
-      wx.navigateTo({ url: '/pages/shopDetail/main' });
+    goShopDetail() {
+      wx.navigateTo({ url: "/pages/shopDetail/main?shopID=" + this.shopID });
     }
   },
-  onLoad(option){
-    this.itemid = option.cardId
+  onLoad(option) {
+    // 卡券ID
+    this.itemid = option.cardId;
+    // 消费卡券ID
+    this.consumeID = option.consumeId;
+
     // console.log(option);
-  },
-  onShow() {
-        hxios.post('/pack/iteminfo',{itemId:this.itemid}).then(res=>{
-          // 卡券详情
-        this.cardDetail = res.data.data
+    console.log(option);
+    if (option.hasOwnProperty("consumeId")) {
+      // 去本地存储获取会员ID
+      wx.getStorage({
+        key: "用户ID",
+        success: res => {
+          console.log(res.data);
+          this.memberID = res.data;
+          hxios
+            .post("/member_consume/iteminfo", {
+              memberId: this.memberID,
+              consumeId: this.consumeID
+            })
+            .then(res => {
+              console.log(res);
+              this.cardDetail = res.data.data
+            });
+        },
+        fail: () => {},
+        complete: () => {}
+      });
+    } else if (option.hasOwnProperty("cardId")) {
+      hxios.post("/pack/iteminfo", { itemId: this.itemid }).then(res => {
+        // 卡券详情
+      console.log(res);
+      
+        this.cardDetail = res.data.data;
         // console.log(this.cardDetail);
         // 商户位置经度
-        this.merchantLon = parseFloat(res.data.data.merchantLon)
+        this.merchantLon = parseFloat(res.data.data.merchantLon);
         // 商户位置纬度
-        this.merchantLat = parseFloat(res.data.data.merchantLat)
+        this.merchantLat = parseFloat(res.data.data.merchantLat);
         // 商户位置
-        this.address = res.data.data.merchantAddress
+        this.address = res.data.data.merchantAddress;
         // 商户电话
-        this.phoneNumber = res.data.data.merchantPhone
+        this.phoneNumber = res.data.data.merchantPhone;
         // 商户名
-        this.shopName = res.data.data.merchantName
-        
-        
-        
-        
-    })
+        this.shopName = res.data.data.merchantName;
+        // 商户ID
+        this.shopID = res.data.data.merchantId;
+      });
+    }
   },
+  onShow() {}
 };
 </script>
 
@@ -110,7 +158,6 @@ page {
   transform: translateY(-25%);
   padding: 25px 15px;
   .detailBox {
-
     background-color: #fff;
     border-radius: 10px;
     padding: 0 15px;
@@ -177,7 +224,7 @@ page {
       height: 125px;
       border-bottom: 1px solid #e6e6e6;
       position: relative;
-      .line{
+      .line {
         height: 66px;
         width: 1px;
         background-color: #e6e6e6;
@@ -243,7 +290,7 @@ page {
         line-height: 55px;
         color: #e64352;
       }
-      span{
+      span {
         position: absolute;
         display: block;
         height: 35px;
@@ -252,7 +299,7 @@ page {
         line-height: 35px;
         left: 50%;
         top: 50%;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
       }
     }
     .logo {
@@ -264,15 +311,14 @@ page {
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      img{
-      width: 40px;
-      height: 40px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%)
+      img {
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
-
     }
   }
 }

@@ -14,7 +14,7 @@
       >
       <button open-type="getUserInfo" @getuserinfo="userInfo"> <img
           :src="userImg"
-          alt
+          altgit
           class="icon"
           @tap="login"
         ></button>
@@ -46,6 +46,7 @@
         >
         <span>已过期</span>
       </div>
+      <div class="yuan">1</div>
     </div>
     <div
       class="opinion"
@@ -103,48 +104,12 @@ export default {
       // 用户头像
       userImg:"http://img3.imgtn.bdimg.com/it/u=1248345049,109226570&fm=26&gp=0.jpg",
       // 用户昵称
-      userName:"用户名",
+      userName:"登录",
       code:""
     };
   },
   onLoad(){
-    wx.login({
-      success: res => {
-        console.log(res);
-        this.code = res.code;
-        hxios.post('/wechat_mini/userlogin',{code:this.code}).then(res=>{
-          console.log(res);
-          wx.setStorage({
-            key: '用户ID',
-            data: res.data.data.memberId
-          });
-        })
-        // wx.request({
-        //   url: 'https://api.weixin.qq.com/sns/jscode2session?appid=wx03a96073c8a1d46b&secret=47eb12299ba5261c4b0f3d91e5fdfd62&js_code='+this.code+'&grant_type=authorization_code', //开发者服务器接口地址"
-        //   data: 'data', //请求的参数",
-        //   method: 'GET',
-        //   dataType: 'json', //如果设为json，会尝试对返回的数据做一次 JSON.parse
-        //   success: res => {
-        //     console.log(res);
-        //     // wx.getUserInfo({
-        //     //   withCredentials: false,
-        //     //   success: res => {
-        //     //     console.log(res);
-                
-        //     //   },
-        //     //   fail: () => {},
-        //     //   complete: () => {}
-        //     // });
-            
-        //   },
-        //   fail: () => {},
-        //   complete: () => {}
-        // });
-        
-      },
-      fail: () => {},
-      complete: () => {}
-    });
+
   },
   methods: {
     getPhoneNumber(e){
@@ -169,8 +134,26 @@ export default {
     // 获取用户信息
     userInfo(e){
       console.log(e);
-      
-      // console.log(e.target.userInfo);
+          wx.login({
+      success: res => {
+        console.log(res);
+        this.code = res.code;
+        hxios.post('/wechat_mini/userlogin',{code:this.code}).then(res=>{
+          console.log(res);
+          wx.setStorage({
+            key: '用户ID',
+            data: res.data.data.memberId
+          });
+          wx.setStorage({
+            key: 'token',
+            data: res.data.data.openId
+          });
+        })
+        
+      },
+      fail: () => {},
+      complete: () => {}
+    });
       // 用户头像
       this.userImg = e.target.userInfo.avatarUrl
       // 用户名
@@ -269,6 +252,19 @@ page {
     width: 350px;
     left: 13px;
     border-radius: 8px;
+    .yuan{
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #e43949;
+      position: absolute;
+      top: 16px;
+      left: 67px;
+      color: #fff;
+      text-align: center;
+      line-height: 20px;
+      font-size: 13px;
+    }
     .unused,
     .used,
     .dated {

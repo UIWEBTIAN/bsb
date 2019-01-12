@@ -27,11 +27,15 @@ export default {
       // 商户名
       shopName:"",
       // 标记点
-      markers: []
+      markers: [],
+      // polyline
+      polyline:[]
 
     };
   },
   onLoad(option) {
+    console.log(1111);
+    
     // 商家位置的经度
     this.merchantLon = parseFloat(option.merchantLon);
     // 商家位置的纬度
@@ -41,7 +45,7 @@ export default {
     // 商户名
     this.shopName = option.shopName
     wx.getLocation({
-      type: "wgs84", //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于wx.openLocation的坐标,
+      type: "gcj02", //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于wx.openLocation的坐标,
       success: res => {
         console.info("getLocation success: ", res);
         const latitude = this.merchantLat;
@@ -53,16 +57,16 @@ export default {
           {
             iconPath: "/static/image/m-icon.png",
             id: 0,
-            latitude: latitude,
-            longitude: longitude,
+            latitude: 22.842399,
+            longitude: 114.019138,
             width: 35,
             height: 35,
             title: "当前位置",
             callout: {
               padding: 10,
-              content: "当前位置",
+              content: "一颗牙疼",
               bgColor: "#DC143C",
-              color: "#FFFF00",
+              color: "#c8f2c2",
               display: "ALWAYS"
             },
             label: { content: "标题" },
@@ -88,8 +92,8 @@ export default {
         success: res => {
           if (res.confirm) {
             wx.openLocation({
-              latitude: this.merchantLat, //纬度，范围为-90~90，负数表示南纬,
-              longitude: this.merchantLon, //经度，范围为-180~180，负数表示西经,
+              latitude: 22.842399, //纬度，范围为-90~90，负数表示南纬,
+              longitude: 114.019138, //经度，范围为-180~180，负数表示西经,
               scale: 15, //缩放比例，范围5~18,
               name: this.shopName, //位置名,
               address: this.address, //地址的详细说明,
