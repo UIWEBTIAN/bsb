@@ -5,6 +5,7 @@
         src="/static/image/storelogo.png"
         alt=""
         class="logo"
+        @click="selectIndex=2"
       >
       <div class="title">豪客来 (旺南世贸中心店)</div>
       <div class="search">
@@ -13,7 +14,10 @@
           src="/static/image/shops/hexiaoma.png"
           alt=""
         >
-        <span class="enter" @click="selectIndex=1">确 定</span>
+        <span
+          class="enter"
+          @click="selectIndex=1"
+        >确 定</span>
       </div>
       <div class="information">
         <div class="left">
@@ -71,9 +75,23 @@
           <div class="merchantUsed"><span class="merchant">使用条件 :&nbsp;&nbsp;</span><span class="used">2018.12.20-2019.03.13, 周一至周日全天, 不与店铺优惠叠加</span></div>
         </div>
         <div class="bottom">
-          <span class="goback" @click="selectIndex=0">返回</span>
+          <span
+            class="goback"
+            @click="selectIndex=0"
+          >返回</span>
           <span class="nowHX">立即核销</span>
         </div>
+      </div>
+    </div>
+    <!-- 核销失败 -->
+    <div
+      class="HXinformation"
+      v-show="selectIndex==2"
+    >
+      <div class="HXfail">
+        <div class="HXtitle">核销失败</div>
+        <div class="HXcontent">已使用/已过期/非本店</div>
+        <button @click="selectIndex=0">返回</button>
       </div>
     </div>
   </div>
@@ -84,7 +102,7 @@ export default {
   data: function() {
     return {
       // 显示索引
-      selectIndex:0
+      selectIndex: 0
     };
   },
   methods: {
@@ -254,7 +272,7 @@ page {
     }
   }
   // 卡券核销码
-    .qrCode {
+  .qrCode {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -275,7 +293,7 @@ page {
       padding: 0 10px;
       box-sizing: border-box;
       z-index: 999;
-      .line{
+      .line {
         position: absolute;
         left: 0;
         top: 19px;
@@ -283,14 +301,14 @@ page {
         height: 15px;
         background-color: #e43949;
       }
-      .title{
+      .title {
         position: absolute;
         top: 15px;
         left: 15px;
         font-size: 16px;
         color: #575757;
       }
-      .top{
+      .top {
         position: absolute;
         top: 91px;
         left: 50%;
@@ -298,22 +316,22 @@ page {
         width: 166px;
         height: 85px;
         text-align: center;
-        .card{
+        .card {
           margin-bottom: 25px;
           font-size: 27px;
           color: #0a0a0a;
           font-weight: bold;
         }
-        span{
+        span {
           font-size: 14px;
           color: #686868;
         }
-        .hxNumber{
+        .hxNumber {
           font-size: 14px;
           color: #e43949;
         }
       }
-      .content{
+      .content {
         position: absolute;
         top: 231px;
         width: 100%;
@@ -324,18 +342,22 @@ page {
         box-sizing: border-box;
         font-size: 13px;
         color: #666666;
-        .merchantName,.merchantAddress,.merchantUsed{
+        .merchantName,
+        .merchantAddress,
+        .merchantUsed {
           display: flex;
           margin-bottom: 10px;
-          .merchant{
+          .merchant {
             width: 67px;
           }
-          .name,.address,.used{
+          .name,
+          .address,
+          .used {
             flex: 1;
           }
         }
       }
-      .bottom{
+      .bottom {
         position: absolute;
         bottom: 0;
         width: 100%;
@@ -343,17 +365,18 @@ page {
         background-color: #fff;
         right: 0;
         display: flex;
-        
-        .goback,.nowHX{
-          flex: 1; 
+
+        .goback,
+        .nowHX {
+          flex: 1;
           text-align: center;
-        line-height: 23px;
-        font-size: 15px;
+          line-height: 23px;
+          font-size: 15px;
         }
-        .goback{
+        .goback {
           color: #666666;
         }
-        .nowHX{
+        .nowHX {
           color: #e43949;
         }
       }
@@ -384,5 +407,53 @@ page {
       }
     }
   }
+  // 核销失败
+  .HXinformation {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(110, 110, 112, 0.7);
+    top: 0;
+    left: 0;
+    z-index: 15;
+      .HXfail {
+        width: 280px;
+        height: 145px;
+        background-color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        .HXtitle{
+          position: absolute;
+          top: 30px;
+          color: #000000;
+          font-size: 18px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        .HXcontent{
+          position: absolute;
+          top: 63px;
+          font-size: 14px;
+          color: #999999;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        button{
+          width: 100%;
+          height: 50px;
+          border-top: 1px solid #d2d3d5;
+          position: absolute;
+          bottom: 0;
+          background-color: #fff;
+          text-align: center;
+          color: #42cb42;
+          font-size: 15px;
+          line-height: 50px;;
+        }
+  }
+  }
+
 }
 </style>

@@ -1,14 +1,20 @@
 <template>
   <div class="index">
+    <!-- 头部 -->
+    <div class="top">
+      <span>百商邦</span>
+    </div>
     <!-- 轮播图 -->
     <div class="swiper">
       <swiper
         indicator-dots
         autoplay
         circular
-        
       >
-        <swiper-item  v-for="(item, index) in swiperList" :key="index">
+        <swiper-item
+          v-for="(item, index) in swiperList"
+          :key="index"
+        >
           <image
             mode="aspectFill"
             :src="item.img"
@@ -58,14 +64,23 @@
         v-show="selectedIndex==0"
       >
         <!-- 优惠商品 -->
-        <div
-          class="discounts" 
-        >
-          <div class="gift" v-for="(item, index) in recommend" :key="index" >
-            <div class="content" @click="gochildBag(index)">
+        <div class="discounts">
+          <div
+            class="gift"
+            v-for="(item, index) in recommend"
+            :key="index"
+          >
+            <div
+              class="content"
+              @click="gochildBag(index)"
+            >
               <h4>{{item.packTitle}}</h4>
-              <div class="mcdonald" v-for="(it, i) in item.items" :key="i" >
-                <div class="logo" >
+              <div
+                class="mcdonald"
+                v-for="(it, i) in item.items"
+                :key="i"
+              >
+                <div class="logo">
                   <img
                     :src="it.merchantLogo"
                     alt=""
@@ -79,7 +94,7 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button @click="buyGift">购买礼包</button>
+              <button @click="buyGift(index)">购买礼包</button>
             </div>
           </div>
         </div>
@@ -121,14 +136,21 @@
         class="item"
         v-show="selectedIndex==1"
       >
-                <div
-          class="discounts" 
-        >
-          <div class="gift" v-for="(item, index) in newList" :key="index" @click="gochildBag(index)">
+        <div class="discounts">
+          <div
+            class="gift"
+            v-for="(item, index) in newList"
+            :key="index"
+            @click="gochildBag(index)"
+          >
             <div class="content">
               <h4>{{item.packTitle}}</h4>
-              <div class="mcdonald" v-for="(it, i) in item.items" :key="i" >
-                <div class="logo" >
+              <div
+                class="mcdonald"
+                v-for="(it, i) in item.items"
+                :key="i"
+              >
+                <div class="logo">
                   <img
                     :src="it.merchantLogo"
                     alt=""
@@ -151,14 +173,21 @@
         class="item"
         v-show="selectedIndex==2"
       >
-                        <div
-          class="discounts" 
-        >
-          <div class="gift" v-for="(item, index) in hotList" :key="index" @click="gochildBag(index)">
+        <div class="discounts">
+          <div
+            class="gift"
+            v-for="(item, index) in hotList"
+            :key="index"
+            @click="gochildBag(index)"
+          >
             <div class="content">
               <h4>{{item.packTitle}}</h4>
-              <div class="mcdonald" v-for="(it, i) in item.items" :key="i" >
-                <div class="logo" >
+              <div
+                class="mcdonald"
+                v-for="(it, i) in item.items"
+                :key="i"
+              >
+                <div class="logo">
                   <img
                     :src="it.merchantLogo"
                     alt=""
@@ -181,14 +210,21 @@
         class="item"
         v-show="selectedIndex==3"
       >
-                                <div
-          class="discounts" 
-        >
-          <div class="gift" v-for="(item, index) in priceList" :key="index" @click="gochildBag(index)">
+        <div class="discounts">
+          <div
+            class="gift"
+            v-for="(item, index) in priceList"
+            :key="index"
+            @click="gochildBag(index)"
+          >
             <div class="content">
               <h4>{{item.packTitle}}</h4>
-              <div class="mcdonald" v-for="(it, i) in item.items" :key="i" >
-                <div class="logo" >
+              <div
+                class="mcdonald"
+                v-for="(it, i) in item.items"
+                :key="i"
+              >
+                <div class="logo">
                   <img
                     :src="it.merchantLogo"
                     alt=""
@@ -232,7 +268,13 @@ export default {
       // 价格礼包
       priceList:[],
       // 礼包id
-      giftId:[]
+      giftId:[],
+      // 用户ID
+      memberID:0,
+      // 订单号
+      orderNumber:0,
+      // openID
+      openID:0
 
     };
   },
@@ -242,16 +284,40 @@ export default {
     // 跳转到礼包详情
     gochildBag(index){
       wx.navigateTo({ url: '/pages/childBag/main?id='+this.giftId[index]});
-      console.log(this.giftId[index]);
-      
-
+      // console.log(this.giftId[index]);
     },
     // 购买礼包
-    buyGift(){
+    buyGift(index){
       wx.getStorage({
         key: 'token',
         success: (res) => {
-          console.log(res.data)
+          wx.getStorage({
+            key: 'token',
+            success: (res) => {
+              // openID
+              this.openID = res.data
+              // 礼包Id
+              let id = this.giftId[index].toFixed()
+              // 用户Id
+              let memberID = this.memberID.toFixed()
+              
+
+              hxios.post('/sales_pack/quickbuy',{memberId:memberID,packId:id}).then(res=>{
+                // 订单号
+                this.orderNumber = res.data.data.orderNo
+                console.log(this.memberID);
+                
+                // 发请求
+                hxios.post('/sales_pack/topay',{modeCode:"WECHAT_MINI",orderNo:this.orderNumber,memberId:this.memberID,openId:this.openID}).then(res=>{
+                  console.log(res);
+              
+            })
+            
+          })
+            },
+            fail: () => { },
+            complete: () => { }
+          })
         },
         fail: () => { 
           wx.showModal({
@@ -277,6 +343,17 @@ export default {
 
   },
   onLoad() {
+    // 获取memberID
+    wx.getStorage({
+      key: '用户ID',
+      success: (res) => {
+        
+        this.memberID = res.data
+      },
+      fail: () => { },
+      complete: () => { }
+    })
+    
       // 页面加载的时候.默认索引等于0
     this.selectedIndex = 0
       hxios.post("/index/ppt").then(res => {
@@ -284,7 +361,7 @@ export default {
         this.swiperList = res.data.data;
     }),
       hxios.post('/index/packs').then(res=>{
-        console.log(res);
+        // console.log(res);
         
         // 推荐礼包
         this.recommend = res.data.data
@@ -321,7 +398,7 @@ export default {
       // })
       hxios.post('/index/packs',{sort:'price',desc:0}).then(res=>{
         // 最新礼包
-        console.log(res);
+        // console.log(res);
         
         this.priceList = res.data.data
       })
@@ -374,14 +451,14 @@ export default {
         // 升序发起请求
          hxios.post('/index/packs',{sort:'price',desc:0}).then(res=>{
         // 最新礼包
-        console.log(res);
+        // console.log(res);
         
         this.priceList = res.data.data
       })
       }else if(newQuestion==false){
                  hxios.post('/index/packs',{sort:'price',desc:1}).then(res=>{
         // 最新礼包
-        console.log(res);
+        // console.log(res);
         
         this.priceList = res.data.data
       })
@@ -392,8 +469,32 @@ export default {
 </script>
 
 <style lang="less">
+page {
+  width: 100%;
+}
+.index {
+  width: 100%;
+  padding-top: 70px;
+}
+// 头部
+.top {
+  position: fixed;
+  top: 0;
+  // left: 0;
+  z-index: 10;
+  height: 70px;
+  width: 100%;
+  background-color: #fff;
+  span {
+    position: absolute;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
+  }
+}
 // 轮播图
 .swiper {
+  width: 100%;
   image {
     width: 100%;
     height: 100%;
@@ -401,6 +502,7 @@ export default {
 }
 // 分类
 .tap-category {
+  width: 100%;
   ul {
     display: flex;
     height: 40px;
@@ -526,7 +628,7 @@ export default {
         line-height: 35px;
         left: 167rpx;
         font-size: 24rpx;
-        text-decoration:line-through;
+        text-decoration: line-through;
       }
       .residue {
         color: #f3b6ba;

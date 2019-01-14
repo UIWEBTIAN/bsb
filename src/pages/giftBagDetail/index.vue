@@ -1,5 +1,11 @@
 <template>
   <div class="giftBD">
+        <!-- 头部 -->
+    <div class="top-one">
+      <i class="iconfont goBack" @click="goBack">&#xe614;</i>
+      <i class="iconfont home" @click="goHome">&#xe626;</i>
+      <span>百商邦</span>
+    </div>
     <div class="detailBox">
       <div class="top">
         <div class="title">{{cardDetail.merchantName}}</div>
@@ -93,6 +99,16 @@ export default {
     // 去商家详情页
     goShopDetail() {
       wx.navigateTo({ url: "/pages/shopDetail/main?shopID=" + this.shopID });
+    },
+    // 返回上一页
+    goBack(){
+      wx.navigateBack({
+        delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+      });
+    },
+    // 返回首页
+    goHome(){
+      wx.switchTab({ url: '/pages/index/main' });
     }
   },
   onLoad(option) {
@@ -157,6 +173,38 @@ page {
   margin-top: 50%;
   transform: translateY(-25%);
   padding: 25px 15px;
+  // 头部
+  // padding-top: 70px;
+.top-one{
+  margin-top: -20%;
+  margin-left: -15px;
+  position: fixed;
+  top: 0;
+  // left: 0;
+  z-index: 10;
+  height: 70px;
+  width: 100%;
+  background-color: #e64352;
+  .goBack{
+    position: absolute;
+    top: 40%;
+    left: 10px;
+    font-size: 23px;
+  }
+  .home{
+    position: absolute;
+    top: 35%;
+    left: 60px;
+    font-size: 30px;
+  }
+  span{
+    position: absolute;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%,-50%);
+    
+  }
+}
   .detailBox {
     background-color: #fff;
     border-radius: 10px;

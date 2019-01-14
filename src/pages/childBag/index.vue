@@ -3,24 +3,26 @@
     class="index"
     :class="{hide:style==1}"
   >
+    <!-- 头部 -->
+    <div class="top">
+      <i class="iconfont goBack" @click="goBack">&#xe614;</i>
+      <span>礼包</span>
+    </div>
     <div class="content-box">
       <div
         class="giftBag"
         v-for="(item, index) in giftDetail"
         :key="index"
-        @click="gocardDetail(index)"
       >
-        <div class="header">
+        <div class="header" @click="gocardDetail(index)">
           <div class="logo">
             <img
               :src="item.merchantLogo"
               alt
             >
           </div>
-          <span class="title">{{item.Title}}</span>
-          <span
-            class="detail"
-          >详情&nbsp&nbsp></span>
+          <span class="title">{{item.itemTitle}}</span>
+          <span class="detail">详情&nbsp&nbsp<i class="iconfont">&#xe64c;</i></span>
           <div class="time">有效期至 : {{item.itemDeadline}}</div>
         </div>
         <div class="information">
@@ -43,17 +45,15 @@
         <div
           class="footer"
           :class="{showMore:index==isUp}"
+          @click="many(index)"
         >
-          <span class="show">使用条件 : {{item.itemRule}}</span>&nbsp&nbsp
-          <span
-            @click="many(index)"
-            class="more"
-          >∨</span>
+          <span class="show">使用条件 : {{item.itemRule}}</span>
+         <i class="iconfont" >&#xe731;</i>
         </div>
       </div>
 
     </div>
-    <div class="buy" >
+    <div class="buy">
       <span class="money">¥{{price.salePrice}}</span>
       <span class="oldPrice">门市价 : ¥{{price.marketPrice}}</span>
       <span class="residue">剩余 : {{price.qty}}</span>
@@ -106,14 +106,13 @@
       :src="'data:image/jpeg;base64,'+imgUrl"
       alt=""
     > -->
-    
 
   </div>
 </template>
 
 <script>
 import hxios from "../../../src/utils/hxios.js";
-import drawQrcode from "../../../src/utils/weapp.qrcode.esm.js"
+import drawQrcode from "../../../src/utils/weapp.qrcode.esm.js";
 export default {
   data: function() {
     return {
@@ -125,7 +124,7 @@ export default {
       // 礼包详情
       giftDetail: [],
       // 购买金额
-      price:[],
+      price: [],
       // 礼包详情id
       giftId: 0,
       // 卡券id
@@ -157,21 +156,31 @@ export default {
     // 去卡券详情页
     gocardDetail(index) {
       wx.navigateTo({
-        url: "/pages/giftBagDetail/main?cardId=" + this.cardId[index]
+        // url: "/pages/giftBagDetail/main?cardId=" + this.cardId[index]
       });
       // console.log(this.cardId[index]);
     },
     many(index) {
       // console.log(index);
       if (index == 0) {
-        this.isUp = false;
+        this.isUp = 0;
         // console.log(this.isUp);
       } else if (index == 1) {
-        this.isUp = true;
+        this.isUp = 1;
       }
       // if (this.isUp === false) {
       //   this.isUp = 3
       // }
+    },
+    // 返回上一页
+    goBack(){
+      wx.navigateBack({
+        delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+      });
+    },
+    // 返回首页
+    goHome(){
+      wx.switchTab({ url: '/pages/index/main' });
     }
   },
   created() {},
@@ -180,20 +189,19 @@ export default {
     drawQrcode({
       width: 125,
       height: 125,
-      canvasId: 'myQrcode',
+      canvasId: "myQrcode",
       text: "一颗牙疼"
-    })
+    });
     // console.log(option.id);
-    
 
     hxios.post("/pack/packinfo", { packId: this.giftId }).then(res => {
       // console.log(res);
       // 礼包详情
       this.giftDetail = res.data.data.items;
       // 购买金额
-      this.price = res.data.data
+      this.price = res.data.data;
       console.log(this.price);
-      
+
       // console.log(this.giftDetail);
       var arr = [];
       this.giftDetail.forEach(element => {
@@ -245,6 +253,15 @@ export default {
     //   fail: () => {},
     //   complete: () => {}
     // });
+  },
+  watch:{
+    isUp:function(newQuestion,oldQuestion){
+      console.log(newQuestion);
+      if(newQuestion == 0){
+        this.isUp = 3
+      }
+      
+    }
   }
 };
 </script>
@@ -258,11 +275,41 @@ page {
 .index {
   width: 100%;
   height: 100%;
-  padding: 22rpx 22rpx 22rpx 22rpx;
+  padding: 22rpx 22rpx 81px 22rpx;
   box-sizing: border-box;
   background-color: #efeff4;
   position: relative;
-  overflow:hidden;
+  overflow: hidden;
+  padding-top: 70px;
+  // 头部
+  .top {
+    position: fixed;
+    top: 0;
+    // left: 0;
+    z-index: 10;
+    height: 70px;
+    width: 100%;
+    margin-left: -22rpx;
+    background-color: #fff;
+    .goBack {
+      position: absolute;
+      top: 40%;
+      left: 10px;
+      font-size: 23px;
+    }
+    .home {
+      position: absolute;
+      top: 35%;
+      left: 60px;
+      font-size: 30px;
+    }
+    span {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+    }
+  }
   .qrCode {
     width: 100%;
     height: 100%;
@@ -323,6 +370,7 @@ page {
     box-sizing: border-box;
     position: relative;
     z-index: 10;
+    margin-top: 22rpx;
     .giftBag {
       background-color: #fafafa;
       margin-bottom: 20rpx;
@@ -362,6 +410,13 @@ page {
           font-size: 23rpx;
           color: #888888;
           top: 18rpx;
+          i{
+            position: absolute;
+            right: -13rpx;
+            font-size: 25rpx;
+            color: #888888;
+            top: 5rpx;
+          }
         }
         .time {
           font-size: 23rpx;
@@ -409,7 +464,7 @@ page {
         line-height: 45rpx;
         border-bottom-right-radius: 10rpx;
         border-bottom-left-radius: 10rpx;
-
+        position: relative;
         .show {
           display: inline-block;
           margin-left: 20rpx;
@@ -420,8 +475,11 @@ page {
           white-space: nowrap;
         }
 
-        .more {
+        .iconfont {
+          position: absolute;
           font-size: 40rpx;
+          top: 0;
+          right:0;
         }
         .hide {
           display: none;

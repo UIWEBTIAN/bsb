@@ -1,5 +1,8 @@
 <template>
   <div class="index">
+    <div class="top">
+      <span>个人中心</span>
+    </div>
     <div class="header">
       <img
         src="/static/image/beijing.png"
@@ -12,7 +15,10 @@
         class="set"
         @click="goSet"
       >
-      <button open-type="getUserInfo" @getuserinfo="userInfo"> <img
+      <button
+        open-type="getUserInfo"
+        @getuserinfo="userInfo"
+      > <img
           :src="userImg"
           altgit
           class="icon"
@@ -32,21 +38,21 @@
         >
         <span>未使用</span>
       </div>
-      <div class="used">
+      <div class="used" @click="goUse">
         <img
           src="/static/image/user.png"
           alt
         >
         <span>已使用</span>
       </div>
-      <div class="dated">
+      <div class="dated" @click="goUpdated">
         <img
           src="/static/image/yiguoqi.png"
           alt
         >
         <span>已过期</span>
       </div>
-      <div class="yuan">1</div>
+      <div class="yuan">{{card}}</div>
     </div>
     <div
       class="opinion"
@@ -97,24 +103,42 @@
 </template>
 
 <script>
-import hxios from '../../../src/utils/hxios.js'
+import hxios from "../../../src/utils/hxios.js";
 export default {
   data: function() {
     return {
       // 用户头像
-      userImg:"http://img3.imgtn.bdimg.com/it/u=1248345049,109226570&fm=26&gp=0.jpg",
+      userImg:
+        "http://img3.imgtn.bdimg.com/it/u=1248345049,109226570&fm=26&gp=0.jpg",
       // 用户昵称
-      userName:"登录",
-      code:""
+      userName: "登录",
+      code: "",
+      // 用户ID
+      memberID:0,
+      // 未使用的卡券的个数
+      card:0
     };
   },
-  onLoad(){
+  onLoad() {
+    wx.getStorage({
+      key: '用户ID',
+      success: (res) => {
+        // 用户ID
+        this.memberID = res.data
+        hxios.post('/member_consume/itemlist',{memberId:this.memberID,status:"usable"}).then(res=>{
+          this.card = res.data.data.length
+           console.log(this.card);
+          
+    })
+      },
+      fail: () => { },
+      complete: () => { }
+    })
 
   },
   methods: {
-    getPhoneNumber(e){
+    getPhoneNumber(e) {
       console.log(e);
-      
     },
     // getUserInfo(e){
     //   // wx.getUserInfo({
@@ -132,40 +156,47 @@ export default {
     // }
 
     // 获取用户信息
-    userInfo(e){
+    userInfo(e) {
       console.log(e);
-          wx.login({
-      success: res => {
-        console.log(res);
-        this.code = res.code;
-        hxios.post('/wechat_mini/userlogin',{code:this.code}).then(res=>{
+      wx.login({
+        success: res => {
           console.log(res);
-          wx.setStorage({
-            key: '用户ID',
-            data: res.data.data.memberId
-          });
-          wx.setStorage({
-            key: 'token',
-            data: res.data.data.openId
-          });
-        })
-        
-      },
-      fail: () => {},
-      complete: () => {}
-    });
+          this.code = res.code;
+          hxios
+            .post("/wechat_mini/userlogin", { code: this.code })
+            .then(res => {
+              console.log(res);
+              wx.setStorage({
+                key: "用户ID",
+                data: res.data.data.memberId
+              });
+              wx.setStorage({
+                key: "token",
+                data: res.data.data.openId
+              });
+            });
+        },
+        fail: () => {},
+        complete: () => {}
+      });
       // 用户头像
-      this.userImg = e.target.userInfo.avatarUrl
+      this.userImg = e.target.userInfo.avatarUrl;
       // 用户名
-      this.userName = e.target.userInfo.nickName
-      
+      this.userName = e.target.userInfo.nickName;
     },
 
-    // 去我的卡券
+    // 去我的卡券未使用
     goMineCard() {
-      wx.navigateTo({ url: "/pages/mineCard/main" });
+      wx.navigateTo({ url: "/pages/mineCard/main?index="+0 });
     },
-
+    // 去我的卡券已使用
+    goUse(){
+      wx.navigateTo({ url: '/pages/mineCard/main?index='+1 });
+    },
+    // 去我的卡券已过期
+    goUpdated(){
+      wx.navigateTo({ url: '/pages/mineCard/main?index='+2 });
+    },
     // 去意见反馈
     goOpinion() {
       wx.navigateTo({ url: "/pages/opinion/main" });
@@ -196,6 +227,23 @@ page {
 
 .index {
   position: relative;
+  padding-top: 70px;
+  // 头部
+  .top {
+    position: fixed;
+    top: 0;
+    // left: 0;
+    z-index: 10;
+    height: 70px;
+    width: 100%;
+    background-color: #fff;
+    span {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+    }
+  }
   .header {
     width: 100%;
     height: 250px;
@@ -211,7 +259,7 @@ page {
       width: 20px;
       height: 20px;
     }
-    button{
+    button {
       width: 75px;
       height: 75px;
       border-radius: 50%;
@@ -219,15 +267,15 @@ page {
       left: 50%;
       position: absolute;
       transform: translateX(-50%);
-          .icon {
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
-      width: 75px;
-      height: 75px;
-    }
+      .icon {
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 75px;
+        height: 75px;
+      }
     }
 
     .name,
@@ -245,14 +293,14 @@ page {
   }
   .card {
     position: absolute;
-    top: 212px;
+    top: 250px;
     display: flex;
     height: 109px;
     background-color: #ffffff;
     width: 350px;
     left: 13px;
     border-radius: 8px;
-    .yuan{
+    .yuan {
       width: 20px;
       height: 20px;
       border-radius: 50%;
@@ -305,7 +353,7 @@ page {
   .shopMain {
     position: absolute;
     left: 13px;
-    top: 334px;
+    top: 372px;
     border-radius: 8px;
     width: 350px;
     background-color: #ffffff;
@@ -343,7 +391,7 @@ page {
     }
   }
   .aboutUs {
-    top: 395px;
+    top: 433px;
     .radius-one {
       .yuan {
         background-color: #7d95fd;
@@ -355,7 +403,7 @@ page {
     }
   }
   .shopMain {
-    top: 456px;
+    top: 494px;
     .radius-one {
       .yuan {
         background-color: #7d95fd;

@@ -22,13 +22,19 @@
         "pages/userPwd/main",
         "pages/map/main",
         "pages/friendCard/main",
-        "pages/cardSuccess/main"
+        "pages/cardSuccess/main",
+        "pages/search/main",
+        "pages/shopsCard/main",
+        "pages/shopsCardDetail/main",
+        "pages/shopsCardDetail-dated/main",
+        "pages/shopsCardDetail-addOrUpdate/main"
     ],
     "window": {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#fff",
         "navigationBarTitleText": "百商邦",
-        "navigationBarTextStyle": "black"
+        "navigationBarTextStyle": "black",
+        "navigationStyle": "custom"
     },
     "tabBar": {
         "list": [{

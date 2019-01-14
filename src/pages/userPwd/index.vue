@@ -8,7 +8,8 @@
       <div class="item">
         <span class="messageVerify ">短信验证</span>
         <input type="text" placeholder="输入验证码">
-        <a href="" class="send" @click="sendMessage" >{{content}}</a>
+        <a href="" class="send" @click="sendMessage" v-if="unbind==false">{{content}}</a>
+        <a href="" class="send" v-else>{{content}}</a>
       </div>
       <div class="item password">
         <span class="newPwd">新的密码</span>
@@ -38,7 +39,9 @@ export default {
       // 内容
       content:"发送短信",
       // 定时器ID
-      timeID:null
+      timeID:null,
+      // 发送短信点击判断
+      unbind:false
     };
   },
   methods: {
@@ -52,12 +55,20 @@ export default {
     },
     // 发送短信
     sendMessage(){
+      // 解绑点击事件
+      this.unbind = true
       this.content = this.time+"s重发"
       this.timeID = setTimeout(() => {
         this.time--
         this.sendMessage()
         if(this.time == 0){
+          // 文字恢复到原本文字
           this.content = "发送短信"
+          // 时间恢复到60
+          this.time = 60;
+          // 添加点击事件
+          this.unbind = false
+          // 清除定时器
           clearTimeout(this.timeID)
         }
       }, 1000);

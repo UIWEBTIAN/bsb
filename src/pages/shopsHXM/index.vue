@@ -1,26 +1,37 @@
 <template>
   <div class="giftBD">
+    <!-- 头部 -->
+    <div class="top-one">
+      <i
+        class="iconfont goBack"
+        @click="goBack"
+      >&#xe614;</i>
+      <i
+        class="iconfont home"
+        @click="goHome"
+      >&#xe626;</i>
+    </div>
     <div class="detailBox">
       <div class="top">
-        <div class="title">麦当劳</div>
-        <div class="money">100元代金券</div>
+        <div class="title">{{consumeCardDetail.merchantName}}</div>
+        <div class="money">{{consumeCardDetail.itemTitle}}</div>
         <img
           src="/static/image/bigQRCODE.png"
           alt=""
         >
         <div class="number">
-          <text>核销码: </text><span>2209325871469</span>
+          <text>核销码: </text><span>{{consumeCardDetail.consumeCode}}</span>
         </div>
 
       </div>
       <div class="content">
-        <span class="time">有效期至: </span><span class="date">2018.01.20</span>
-        <span class="use">使用条件: </span><span class="allDay">2018.12.20-2019.03.13 周一至周日 全天 不与店铺优惠叠加</span>
+        <span class="time">有效期至: </span><span class="date">{{consumeCardDetail.itemDeadline}}</span>
+        <span class="use">使用条件: </span><span class="allDay">{{consumeCardDetail.itemRule}}</span>
       </div>
       <div class="bottom">
-        <div class="shop-name">麦当劳南城店<span>(美式餐厅)</span></div>
-        <span class="open-time">营业时间: </span><span class="nowDate">09:30-22:30</span>
-        <span class="shop-address">商家地址: </span><span class="true-address">东莞市科技路城市风暴街区2号楼1层</span>
+        <div class="shop-name">{{consumeCardDetail.merchantName}}<span>(美式餐厅)</span></div>
+        <span class="open-time">营业时间: </span><span class="nowDate">{{consumeCardDetail.merchantHours}}</span>
+        <span class="shop-address">商家地址: </span><span class="true-address">{{consumeCardDetail.merchantAddress}}</span>
         <div class="line"></div>
         <img
           src="/static/image/giftphone.png"
@@ -35,7 +46,7 @@
 
       <div class="logo">
         <img
-          src="/static/image/touxiang.png"
+          :src="consumeCardDetail.merchantLogo"
           alt=""
           class="logo"
         >
@@ -46,15 +57,62 @@
 </template>
 
 <script>
+import hxios from "../../utils/hxios.js";
 export default {
   data: function() {
-    return {};
+    return {
+      // 消费者ID
+      consumeID: 0,
+      // 用户ID
+      memberID: 0,
+      // 消费卡券详情
+      consumeCardDetail:{},
+      // 是否使用
+      status:""
+    };
   },
   methods: {
     // 打电话
     callNumber() {
       wx.makePhoneCall({ phoneNumber: "10010" });
+    },
+    // 返回上一页
+    goBack() {
+      wx.navigateBack({
+        delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+      });
+    },
+    // 返回首页
+    goHome() {
+      wx.switchTab({ url: "/pages/index/main" });
     }
+  },
+  onLoad(option) {
+    // 消费者ID
+    this.consumeID = option.consumeId;
+    // 去存储获取用户ID
+    wx.getStorage({
+      key: "用户ID",
+      success: res => {
+        // 用户ID
+        this.memberID = res.data;
+        // 发起请求
+        hxios
+          .post("/member_consume/iteminfo", {
+            memberId: this.memberID,
+            consumeId: this.consumeID
+          })
+          .then(res => {
+            console.log(res);
+            // 消费卡券详情
+            this.consumeCardDetail = res.data.data
+            this.status = res.data.data.status
+          });
+      },
+      fail: () => {},
+      complete: () => {}
+    });
+    console.log(this.memberID);
   }
 };
 </script>
@@ -65,6 +123,36 @@ page {
 }
 .giftBD {
   padding: 25px 15px;
+  padding-top: 70px;
+  // 头部
+  .top-one {
+    position: fixed;
+    top: 0;
+    // left: 0;
+    z-index: 10;
+    height: 70px;
+    width: 100%;
+    margin-left: -15px;
+    background-color: #e64352;
+    .goBack {
+      position: absolute;
+      top: 40%;
+      left: 10px;
+      font-size: 23px;
+    }
+    .home {
+      position: absolute;
+      top: 35%;
+      left: 60px;
+      font-size: 30px;
+    }
+    span {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+    }
+  }
   .detailBox {
     background-color: #fff;
     border-radius: 10px;
@@ -89,6 +177,7 @@ page {
         color: #0a0a0a;
         left: 50%;
         transform: translateX(-50%);
+        white-space: nowrap;
       }
       img {
         top: 122px;
@@ -235,16 +324,17 @@ page {
       height: 45px;
       background-color: #fff;
       border-radius: 50%;
-      top: 0;
+      top: 50px;
       left: 50%;
       transform: translateX(-50%);
+      z-index: 11;
       img {
         width: 43px;
         height: 43px;
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -55%);
       }
     }
   }

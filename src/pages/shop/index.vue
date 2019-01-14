@@ -1,9 +1,22 @@
 <template>
   <div class="index">
-    <div class="shopList" @click="goShopDetail(index)" v-for="(item, index) in shopList" :key="index">
-      
+    <!-- 头部 -->
+    <div class="top">
+      <span>商家列表</span>
+    </div>
+
+    <div
+      class="shopList"
+      @click="goShopDetail(index)"
+      v-for="(item, index) in shopList"
+      :key="index"
+    >
+
       <div class="left">
-        <img :src="item.merchantLogo" alt="">
+        <img
+          :src="item.merchantLogo"
+          alt=""
+        >
       </div>
       <div class="right">
         <div class="title">{{item.merchantName}}</div>
@@ -20,9 +33,18 @@
           <span class="cardDetail"> {{item.itemTitle}}</span>
         </div>
         <div class="picture">
-          <img src="/static/image/1.jpg" alt>
-          <img src="/static/image/2.jpg" alt>
-          <img src="/static/image/3.jpg" alt>
+          <img
+            src="/static/image/1.jpg"
+            alt
+          >
+          <img
+            src="/static/image/2.jpg"
+            alt
+          >
+          <img
+            src="/static/image/3.jpg"
+            alt
+          >
         </div>
         <div class="line"></div>
       </div>
@@ -44,9 +66,18 @@
           <span class="cardDetail"> 卡士满50减15</span>
         </div>
         <div class="picture">
-          <img src="/static/image/1.jpg" alt>
-          <img src="/static/image/2.jpg" alt>
-          <img src="/static/image/3.jpg" alt>
+          <img
+            src="/static/image/1.jpg"
+            alt
+          >
+          <img
+            src="/static/image/2.jpg"
+            alt
+          >
+          <img
+            src="/static/image/3.jpg"
+            alt
+          >
         </div>
         <div class="line"></div>
       </div>
@@ -68,9 +99,18 @@
           <span class="cardDetail"> 卡士满50减15</span>
         </div>
         <div class="picture">
-          <img src="/static/image/1.jpg" alt>
-          <img src="/static/image/2.jpg" alt>
-          <img src="/static/image/3.jpg" alt>
+          <img
+            src="/static/image/1.jpg"
+            alt
+          >
+          <img
+            src="/static/image/2.jpg"
+            alt
+          >
+          <img
+            src="/static/image/3.jpg"
+            alt
+          >
         </div>
         <div class="line"></div>
       </div>
@@ -79,40 +119,59 @@
 </template>
 
 <script>
-import hxios from '../../../src/utils/hxios.js'
+import hxios from "../../../src/utils/hxios.js";
 export default {
-  data:function(){
+  data: function() {
     return {
       // 商户列表
-      shopList:[],
+      shopList: [],
       // 商户ID
-      shopID:[]
-    }
+      shopID: []
+    };
   },
-  methods:{
+  methods: {
     // 跳转到商店详情页
-    goShopDetail(index){
-      wx.navigateTo({ url: '/pages/shopDetail/main?shopID='+this.shopID[index] });
+    goShopDetail(index) {
+      wx.navigateTo({
+        url: "/pages/shopDetail/main?shopID=" + this.shopID[index]
+      });
     }
   },
-  onShow(){
-    hxios.post('/merchant/merlist').then(res=>{
+  onShow() {
+    hxios.post("/merchant/merlist").then(res => {
       // 商户列表
-      this.shopList = res.data.data
+      this.shopList = res.data.data;
       // 商户ID
-      
+
       this.shopList.forEach(element => {
         // 把ID添加到数组中
-        this.shopID.push(element.merchantId)
+        this.shopID.push(element.merchantId);
       });
-      
-      
-    })
+    });
   }
 };
 </script>
 
 <style lang="less">
+.index {
+  padding-top: 70px;
+  // 头部
+  .top {
+    position: fixed;
+    top: 0;
+    // left: 0;
+    z-index: 10;
+    height: 70px;
+    width: 100%;
+    background-color: #fff;
+    span {
+      position: absolute;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
 .shopList {
   display: flex;
   padding: 0 10px;
@@ -124,11 +183,11 @@ export default {
     background-color: #ffffff;
     border-radius: 5px;
     border: 1px solid #ebebeb;
-    img{
+    img {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       width: 40px;
       height: 40px;
     }
@@ -152,9 +211,9 @@ export default {
       color: #333333;
       font-weight: 600;
     }
-    .content-bag{
+    .content-bag {
       position: relative;
-      .giftBag{
+      .giftBag {
         display: inline-block;
         width: 60rpx;
         height: 30rpx;
@@ -166,13 +225,13 @@ export default {
         text-align: center;
         line-height: 30rpx;
       }
-      .giftDetail{
+      .giftDetail {
         color: #666666;
         font-size: 11px;
       }
     }
-    .content-card{
-      .card{
+    .content-card {
+      .card {
         display: inline-block;
         width: 60rpx;
         height: 30rpx;
@@ -184,7 +243,7 @@ export default {
         text-align: center;
         line-height: 30rpx;
       }
-      .cardDetail{
+      .cardDetail {
         color: #666666;
         font-size: 11px;
       }
@@ -198,7 +257,7 @@ export default {
         height: 70px;
       }
     }
-    .line{
+    .line {
       // color:red;
       border-bottom: 1px solid #e8e8e8;
       margin-top: 21px;
