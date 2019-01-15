@@ -26,7 +26,16 @@
           class="icon"
           @tap="login"
         >
-
+      <open-data
+      v-show="buttonIndex==3"
+      class="userIcon"
+        type="userAvatarUrl">
+      </open-data>
+      <open-data
+      class="userName"
+      v-show="buttonIndex==3"
+        type="userNickName">
+      </open-data>
       <div class="name" v-show="buttonIndex==1">{{userName}}</div>
     </div>
     <div class="card">
@@ -130,26 +139,37 @@ export default {
   },
   onLoad() {
     
-    wx.getStorage({
-      key: "img",
-      success: res => {
-        this.userImg = res.data;
-      },
-      fail: () => {},
-      complete: () => {}
-    });
-    wx.getStorage({
-      key: "name",
-      success: res => {
-        this.userName = res.data;
-        console.log(res.data);
-      },
-      fail: () => {},
-      complete: () => {}
-    });
+    // wx.getStorage({
+    //   key: "img",
+    //   success: res => {
+    //     this.userImg = res.data;
+    //   },
+    //   fail: () => {},
+    //   complete: () => {}
+    // });
+    // wx.getStorage({
+    //   key: "name",
+    //   success: res => {
+    //     this.userName = res.data;
+    //     console.log(res.data);
+    //   },
+    //   fail: () => {},
+    //   complete: () => {}
+    // });
+    // wx.getStorage({
+    //   key: 'token',
+    //   success: (res) => {
+    //     console.log(res.data)
+        
+    //   },
+    //   fail: () => {
+    //     this.buttonIndex = 0
+    //    },
+    //   complete: () => { }
+    // })
   },
   onShow() {
-    this.buttonIndex = 0
+    // this.buttonIndex = 0
     wx.getStorage({
       key: "用户ID",
       success: res => {
@@ -162,37 +182,22 @@ export default {
           })
           .then(res => {
             this.card = res.data.data.length;
-            console.log(this.card);
+            // console.log(this.card);
           });
       },
       fail: () => {},
       complete: () => {}
     });
     wx.getStorage({
-      key: "用户ID",
+      key: "token",
       success: res => {
-        console.log(res.data);
-        wx.getStorage({
-          key: "img",
-          success: res => {
-            this.userImg = res.data;
-            wx.getStorage({
-              key: "name",
-              success: res => {
-                this.buttonIndex = 1;
-                this.userName = res.data;
-                console.log(res.data);
-              },
-              fail: () => {},
-              complete: () => {}
-            });
-          },
-          fail: () => {},
-          complete: () => {}
-        });
+        // console.log(res.data);
+        this.buttonIndex = 3
       },
       fail: () => {
+        
         this.userName = "登录";
+        this.buttonIndex = 0;
         this.userImg =
           "http://img3.imgtn.bdimg.com/it/u=1248345049,109226570&fm=26&gp=0.jpg";
       },
@@ -201,7 +206,7 @@ export default {
   },
   methods: {
     getPhoneNumber(e) {
-      console.log(e);
+      // console.log(e);
     },
     // getUserInfo(e){
     //   // wx.getUserInfo({
@@ -221,14 +226,13 @@ export default {
     // 获取用户信息
     userInfo(e) {
       this.buttonIndex = 1;
-      console.log(e);
+      // console.log(e);
       wx.login({
         success: res => {
-          // console.log(res);
+          
           this.code = res.code;
-          hxios
-            .post("/wechat_mini/userlogin", { code: this.code })
-            .then(res => {
+          console.log(this.code);
+          hxios.post("/wechat_mini/userlogin", { code: this.code }).then(res => {
               console.log(res);
 
               wx.setStorage({
@@ -260,7 +264,7 @@ export default {
             })
             .then(res => {
               this.card = res.data.data.length;
-              console.log(this.card);
+              // console.log(this.card);
             });
         },
         fail: () => {},
@@ -360,6 +364,21 @@ page {
       height: 75px;
       border-radius: 50%;
       top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .userIcon{
+      position: absolute;
+      width: 75px;
+      height: 75px;
+      // border-radius: 50%;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .userName{
+      position: absolute;
+      top: 248rpx;
       left: 50%;
       transform: translateX(-50%);
     }

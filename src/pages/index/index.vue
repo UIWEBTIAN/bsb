@@ -94,10 +94,7 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button
-                open-type="getUserInfo"
-                @getuserinfo="userInfo(index)"
-              >购买礼包</button>
+              <button @click="userInfo(index)">购买礼包</button>
             </div>
           </div>
         </div>
@@ -144,9 +141,9 @@
             class="gift"
             v-for="(item, index) in newList"
             :key="index"
-            @click="gochildBag(index)"
+            
           >
-            <div class="content">
+            <div class="content" @click="gochildBag(index)">
               <h4>{{item.packTitle}}</h4>
               <div
                 class="mcdonald"
@@ -167,7 +164,7 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button>购买礼包</button>
+              <button @click="userInfo(index)">购买礼包</button>
             </div>
           </div>
         </div>
@@ -181,9 +178,9 @@
             class="gift"
             v-for="(item, index) in hotList"
             :key="index"
-            @click="gochildBag(index)"
+            
           >
-            <div class="content">
+            <div class="content" @click="gochildBag(index)">
               <h4>{{item.packTitle}}</h4>
               <div
                 class="mcdonald"
@@ -204,7 +201,7 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button>购买礼包</button>
+              <button @click="userInfo(index)">购买礼包</button>
             </div>
           </div>
         </div>
@@ -218,9 +215,9 @@
             class="gift"
             v-for="(item, index) in priceList"
             :key="index"
-            @click="gochildBag(index)"
+           
           >
-            <div class="content">
+            <div class="content"  @click="gochildBag(index)">
               <h4>{{item.packTitle}}</h4>
               <div
                 class="mcdonald"
@@ -241,7 +238,7 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button>购买礼包</button>
+              <button @click="userInfo(index)">购买礼包</button>
             </div>
           </div>
         </div>
@@ -277,7 +274,8 @@ export default {
       // 订单号
       orderNumber: 0,
       // openID
-      openID: 0
+      openID: 0,
+      code:""
     };
   },
   methods: {
@@ -290,38 +288,25 @@ export default {
     },
     // 购买礼包
     userInfo(index) {
+      console.log(index);
       
-      // wx.getUserInfo({
-      //   withCredentials: false,
-      //   success: res => {
-      //     wx.setStorage({
-      //       key: "img",
-      //       data: res.userInfo.avatarUrl
-      //     });
-      //     wx.setStorage({
-      //       key: "name",
-      //       data: res.userInfo.nickName
-      //     });
-          
-      //   },
-      //   fail: () => {
-
-      //   },
-      //   complete: () => {  
-      //   }
-      // });
-
       wx.getStorage({
         key: "token",
-        success: res => {
-          wx.getStorage({
-            key: "token",
             success: res => {
               // openID
               this.openID = res.data;
               // 礼包Id
               let id = this.giftId[index].toFixed();
               // 用户Id
+              wx.getStorage({
+                key: '用户ID',
+                success: (res) => {
+                  this.memberID = res.data
+                  console.log(res.data)
+                },
+                fail: () => { },
+                complete: () => { }
+              })
               let memberID = this.memberID.toFixed();
 
               hxios
@@ -331,7 +316,7 @@ export default {
                 })
                 .then(res => {
                   console.log(res);
-                  
+
                   // 订单号
                   this.orderNumber = res.data.data.orderNo;
 
@@ -353,7 +338,7 @@ export default {
                         paySign: res.data.data.payData.paySign, //签名,具体签名方案参见小程序支付接口文档,
                         success: res => {
                           console.log(res);
-                          
+
                         },
                         fail: () => {},
                         complete: () => {}
@@ -361,37 +346,139 @@ export default {
                     });
                 });
             },
-            fail: () => {},
-            complete: () => {}
-          });
-        },
         fail: () => {
-          console.log(111);
-          
-          wx.login({
+          wx.showModal({
+            title: "提示", //提示的标题,
+            content: "去登录", //提示的内容,
+            showCancel: true, //是否显示取消按钮,
+            cancelText: "取消", //取消按钮的文字，默认为取消，最多 4 个字符,
+            cancelColor: "#000000", //取消按钮的文字颜色,
+            confirmText: "确定", //确定按钮的文字，默认为取消，最多 4 个字符,
+            confirmColor: "#3CC51F", //确定按钮的文字颜色,
             success: res => {
-              // console.log(res);
-              this.code = res.code;
-              hxios
-                .post("/wechat_mini/userlogin", { code: this.code })
-                .then(res => {
-                  console.log(res);
-                  wx.setStorage({
-                    key: "用户ID",
-                    data: res.data.data.memberId
-                  });
-                  wx.setStorage({
-                    key: "token",
-                    data: res.data.data.openId,
-                  });
+              if (res.confirm) {
+                console.log("用户点击确定");
+                wx.login({
+                  success: res => {
+                    console.log(res);
+                    this.code = res.code
+                    hxios
+                      .post("/wechat_mini/userlogin", { code: this.code })
+                      .then(res => {
+                        console.log(res);
+
+                        wx.setStorage({
+                          key: "用户ID",
+                          data: res.data.data.memberId
+                        });
+                        wx.setStorage({
+                          key: "token",
+                          data: res.data.data.openId,
+                          success:function(){
+                            wx.showToast({
+                              title: '登陆成功', //提示的内容,
+                              icon: 'success', //图标,
+                              duration: 2000, //延迟时间,
+                              mask: true, //显示透明蒙层，防止触摸穿透,
+                              success: res => {
+                              }
+                            });
+                          }
+                        });
+                      });
+                  },
+                  fail: () => {},
+                  complete: () => {}
                 });
-            },
-            fail: () => {},
-            complete: () => {}
+              } else if (res.cancel) {
+                console.log("用户点击取消");
+              }
+            }
           });
         },
         complete: () => {}
       });
+      // wx.getStorage({
+      //   key: "token",
+      //   success: res => {
+      //     wx.getStorage({
+      //       key: "token",
+      //       success: res => {
+      //         // openID
+      //         this.openID = res.data;
+      //         // 礼包Id
+      //         let id = this.giftId[index].toFixed();
+      //         // 用户Id
+      //         let memberID = this.memberID.toFixed();
+
+      //         hxios
+      //           .post("/sales_pack/quickbuy", {
+      //             memberId: memberID,
+      //             packId: id
+      //           })
+      //           .then(res => {
+      //             console.log(res);
+
+      //             // 订单号
+      //             this.orderNumber = res.data.data.orderNo;
+
+      //             // 发请求
+      //             hxios
+      //               .post("/sales_pack/topay", {
+      //                 modeCode: "WECHAT_MINI",
+      //                 orderNo: this.orderNumber,
+      //                 memberId: this.memberID,
+      //                 openId: this.openID
+      //               })
+      //               .then(res => {
+      //                 console.log(res);
+      //                 wx.requestPayment({
+      //                   timeStamp: res.data.data.payData.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
+      //                   nonceStr: res.data.data.payData.nonceStr, //随机字符串，长度为32个字符以下,
+      //                   package: res.data.data.payData.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
+      //                   signType: res.data.data.payData.signType, //签名算法，暂支持 MD5,
+      //                   paySign: res.data.data.payData.paySign, //签名,具体签名方案参见小程序支付接口文档,
+      //                   success: res => {
+      //                     console.log(res);
+
+      //                   },
+      //                   fail: () => {},
+      //                   complete: () => {}
+      //                 });
+      //               });
+      //           });
+      //       },
+      //       fail: () => {},
+      //       complete: () => {}
+      //     });
+      //   },
+      //   fail: () => {
+      //     console.log(111);
+
+      //     wx.login({
+      //       success: res => {
+      //         // console.log(res);
+      //         this.code = res.code;
+      //         hxios
+      //           .post("/wechat_mini/userlogin", { code: this.code })
+      //           .then(res => {
+      //             console.log(res);
+      //             wx.setStorage({
+      //               key: "用户ID",
+      //               data: res.data.data.memberId
+      //             });
+      //             wx.setStorage({
+      //               key: "token",
+      //               data: res.data.data.openId,
+      //             });
+      //           });
+      //       },
+      //       fail: () => {},
+      //       complete: () => {}
+      //     });
+      //   },
+      //   complete: () => {}
+      // });
     }
   },
   onLoad() {
@@ -455,6 +542,8 @@ export default {
     selectedIndex: function(newQuestion, oldQuestion) {
       // console.log(newQuestion);
       if (newQuestion == 2) {
+        // 升序降序重置为升序
+        this.isUp = false
         hxios.post("/index/packs", { sort: "hot" }).then(res => {
           // 人气礼包
           this.hotList = res.data.data;
@@ -470,6 +559,8 @@ export default {
           this.giftId = arr;
         });
       } else if (newQuestion == 0) {
+        // 升序降序重置为升序
+        this.isUp = false
         hxios.post("/index/packs").then(res => {
           // 推荐礼包
           this.recommend = res.data.data;
@@ -483,6 +574,9 @@ export default {
           this.giftId = arr;
           // console.log(this.giftId);
         });
+      }else if(newQuestion == 1){
+        // 升序降序重置为升序
+        this.isUp = false
       }
       // console.log(oldQuestion);
     },
