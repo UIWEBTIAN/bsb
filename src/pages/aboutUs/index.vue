@@ -47,9 +47,10 @@ page{
   width: 100%;
 }
 .aboutUs {
-  padding: 15px 10px;
+  // padding: 15px 10px;
   width: 100%;
   // 头部
+  padding-top: 70px;
 .top{
   position: fixed;
   top: 0;
@@ -74,7 +75,8 @@ page{
 }
   .message {
     position: relative;
-    top: 80px;
+    top: 0px;
+    left: 10px;
     width: 100%;
     .text {
       font-weight: 600;

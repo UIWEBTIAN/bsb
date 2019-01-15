@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div class="index">
+        <!-- 头部 -->
+    <div class="top">
+      <i class="iconfont goBack" @click="goBack">&#xe614;</i>
+      <i class="iconfont home" @click="goHome">&#xe626;</i>
+      <span>修改昵称</span>
+    </div>
     <div class="name">
       <span class="whoName">昵称</span>
       <input type="text" class="yourName" @input="yourName">
@@ -28,6 +34,16 @@ export default {
       key: 'name',
       data: this.name
     });
+    },
+        // 返回上一页
+    goBack(){
+      wx.navigateBack({
+        delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+      });
+    },
+    // 返回首页
+    goHome(){
+      wx.switchTab({ url: '/pages/mine/main' });
     }
   },
 };
@@ -36,6 +52,38 @@ export default {
 <style lang="less">
 page {
   background-color: #efeff4;
+}
+.index{
+  // 头部
+  padding-top: 70px;
+.top{
+  position: fixed;
+  top: 0;
+  // left: 0;
+  z-index: 10;
+  height: 70px;
+  width: 100%;
+  background-color: #fff;
+  .goBack{
+    position: absolute;
+    top: 40%;
+    left: 10px;
+    font-size: 23px;
+  }
+  .home{
+    position: absolute;
+    top: 35%;
+    left: 60px;
+    font-size: 30px;
+  }
+  span{
+    position: absolute;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%,-50%);
+    
+  }
+}
 }
 .name {
   position: relative;

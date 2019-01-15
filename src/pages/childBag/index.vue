@@ -44,10 +44,10 @@
         </div>
         <div
           class="footer"
-          :class="{showMore:index==isUp}"
+          :class="{showMore:item.isshow}"
           @click="many(index)"
         >
-          <span class="show">使用条件 : {{item.itemRule}}</span>
+          <span class="show">使用条件 :{{item.itemRule}}</span>
          <i class="iconfont" >&#xe731;</i>
         </div>
       </div>
@@ -57,19 +57,22 @@
       <span class="money">¥{{price.salePrice}}</span>
       <span class="oldPrice">门市价 : ¥{{price.marketPrice}}</span>
       <span class="residue">剩余 : {{price.qty}}</span>
-      <div
+      <button open-type="share" class="button-share">
+        <div
         class="share"
-        @click="selectIndex=1;style=1"
+        
       >
         <img
           src="/static/image/fenxiang.png"
           alt
         >
       </div>
+      </button>
+      
       <span
         class="goBuy"
         @click="goBuy"
-      >&nbsp&nbsp立即抢购 ></span>
+      >&nbsp立即抢购 <i class="iconfont">&#xe625;</i></span>
     </div>
     <img
       src="/static/image/tuoyuan.png"
@@ -129,7 +132,7 @@ export default {
       giftId: 0,
       // 卡券id
       cardId: [],
-      isUp: 3
+      isUp: 3,
       //
     };
   },
@@ -143,34 +146,127 @@ export default {
   },
   methods: {
     goBuy() {
-      wx.getImageInfo({
-        src:
-          "http://img4.imgtn.bdimg.com/it/u=268744851,699852679&fm=26&gp=0.jpg", //图片的路径，可以是相对路径，临时文件路径，存储文件路径，网络图片路径,
+      wx.getStorage({
+        key: "token",
         success: res => {
-          // console.log(res);
+          wx.getStorage({
+            key: "token",
+            success: res => {
+              // openID
+              this.openID = res.data;
+              // 礼包Id
+              let id = this.giftId[index].toFixed();
+              // 用户Id
+              let memberID = this.memberID.toFixed();
+
+              hxios
+                .post("/sales_pack/quickbuy", {
+                  memberId: memberID,
+                  packId: id
+                })
+                .then(res => {
+                  // 订单号
+                  this.orderNumber = res.data.data.orderNo;
+                  console.log(this.memberID);
+
+                  // 发请求
+                  hxios
+                    .post("/sales_pack/topay", {
+                      modeCode: "WECHAT_MINI",
+                      orderNo: this.orderNumber,
+                      memberId: this.memberID,
+                      openId: this.openID
+                    })
+                    .then(res => {
+                      console.log(res);
+                    });
+                });
+            },
+            fail: () => {},
+            complete: () => {}
+          });
         },
-        fail: () => {},
+        fail: () => {
+          wx.showModal({
+            title: "提示", //提示的标题,
+            content: "没有登录,先去登录", //提示的内容,
+            showCancel: true, //是否显示取消按钮,
+            cancelText: "取消", //取消按钮的文字，默认为取消，最多 4 个字符,
+            cancelColor: "#000000", //取消按钮的文字颜色,
+            confirmText: "确定", //确定按钮的文字，默认为取消，最多 4 个字符,
+            confirmColor: "#3CC51F", //确定按钮的文字颜色,
+            success: res => {
+              if (res.confirm) {
+                wx.login({
+                  success: res => {
+                    console.log(res);
+                    this.code = res.code;
+                    hxios
+                      .post("/wechat_mini/userlogin", { code: this.code })
+                      .then(res => {
+                        console.log(res);
+                        wx.setStorage({
+                          key: "用户ID",
+                          data: res.data.data.memberId
+                        });
+                        wx.setStorage({
+                          key: "token",
+                          data: res.data.data.openId,
+                          success:function(){
+                            wx.getUserInfo({
+                              withCredentials: false,
+                              success: res => {
+                                console.log(res);
+                                wx.setStorage({
+                                  key: 'img',
+                                  data: res.userInfo.avatarUrl
+                                });
+                                wx.setStorage({
+                                  key: 'name',
+                                  data: res.userInfo.nickName
+                                });
+                                
+                              },
+                              fail: () => {},
+                              complete: () => {}
+                            });
+                            wx.showToast({
+                              title: '登录成功', //提示的内容,
+                              icon: 'success', //图标,
+                              duration: 2000, //延迟时间,
+                              mask: true, //显示透明蒙层，防止触摸穿透,
+                              success: res => {}
+                            });
+                          }
+                        });
+                      });
+                  },
+                  fail: () => {},
+                  complete: () => {}
+                });
+              } else if (res.cancel) {
+                console.log("用户点击取消");
+              }
+            }
+          });
+        },
         complete: () => {}
       });
     },
     // 去卡券详情页
     gocardDetail(index) {
       wx.navigateTo({
-        // url: "/pages/giftBagDetail/main?cardId=" + this.cardId[index]
+        url: "/pages/giftBagDetail/main?cardId=" + this.cardId[index]
       });
       // console.log(this.cardId[index]);
     },
     many(index) {
-      // console.log(index);
-      if (index == 0) {
-        this.isUp = 0;
-        // console.log(this.isUp);
-      } else if (index == 1) {
-        this.isUp = 1;
-      }
-      // if (this.isUp === false) {
-      //   this.isUp = 3
-      // }
+      let item = this.giftDetail[index]
+
+      item.isshow = !item.isshow
+
+      this.$set(this.giftDetail, index, item)
+
     },
     // 返回上一页
     goBack(){
@@ -198,9 +294,14 @@ export default {
       // console.log(res);
       // 礼包详情
       this.giftDetail = res.data.data.items;
+      console.log(this.giftDetail);
+      this.giftDetail.map(current=>{
+        current.isshow = false
+        return current
+      })
       // 购买金额
       this.price = res.data.data;
-      console.log(this.price);
+      // console.log(this.price);
 
       // console.log(this.giftDetail);
       var arr = [];
@@ -255,13 +356,13 @@ export default {
     // });
   },
   watch:{
-    isUp:function(newQuestion,oldQuestion){
-      console.log(newQuestion);
-      if(newQuestion == 0){
-        this.isUp = 3
-      }
+    // isUp:function(newQuestion,oldQuestion){
+    //   console.log(newQuestion);
+    //   if(newQuestion == 0){
+    //     this.isUp = 3
+    //   }
       
-    }
+    // }
   }
 };
 </script>
@@ -527,6 +628,17 @@ page {
       color: #f3b6ba;
       bottom: 26rpx;
     }
+    .button-share{
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #b22c39;
+      text-align: center;
+      line-height: 35px;
+      position: absolute;
+      right: 131px;
+      top: 19px;
+    }
     .share {
       width: 30px;
       height: 30px;
@@ -557,6 +669,11 @@ page {
       text-align: center;
       line-height: 85rpx;
       font-weight: 600;
+      i{
+        position: absolute;
+        right: 0;
+        top: 0px;
+      }
     }
   }
   // 倒数第二层背景图片

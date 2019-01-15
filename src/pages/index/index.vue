@@ -94,7 +94,10 @@
               <span class="price">¥{{item.salePrice}}</span>
               <span class="oldPrice">¥{{item.marketPrice}}</span>
               <span class="residue">剩余:{{item.qty}}</span>
-              <button @click="buyGift(index)">购买礼包</button>
+              <button
+                open-type="getUserInfo"
+                @getuserinfo="userInfo(index)"
+              >购买礼包</button>
             </div>
           </div>
         </div>
@@ -249,7 +252,7 @@
 </template>
 
 <script>
-import hxios from '../../../src/utils/hxios.js'
+import hxios from "../../../src/utils/hxios.js";
 export default {
   data: function() {
     return {
@@ -258,213 +261,251 @@ export default {
       // 上下箭头
       isUp: false,
       // 轮播图图片
-      swiperList:[],
+      swiperList: [],
       // 推荐礼包
-      recommend:[],
+      recommend: [],
       // 最新礼包
-      newList:[],
+      newList: [],
       // 人气礼包
-      hotList:[],
+      hotList: [],
       // 价格礼包
-      priceList:[],
+      priceList: [],
       // 礼包id
-      giftId:[],
+      giftId: [],
       // 用户ID
-      memberID:0,
+      memberID: 0,
       // 订单号
-      orderNumber:0,
+      orderNumber: 0,
       // openID
-      openID:0
-
+      openID: 0
     };
   },
   methods: {
     // 发请求
-    
+
     // 跳转到礼包详情
-    gochildBag(index){
-      wx.navigateTo({ url: '/pages/childBag/main?id='+this.giftId[index]});
+    gochildBag(index) {
+      wx.navigateTo({ url: "/pages/childBag/main?id=" + this.giftId[index] });
       // console.log(this.giftId[index]);
     },
     // 购买礼包
-    buyGift(index){
-      wx.getStorage({
-        key: 'token',
-        success: (res) => {
-          wx.getStorage({
-            key: 'token',
-            success: (res) => {
-              // openID
-              this.openID = res.data
-              // 礼包Id
-              let id = this.giftId[index].toFixed()
-              // 用户Id
-              let memberID = this.memberID.toFixed()
-              
+    userInfo(index) {
+      
+      // wx.getUserInfo({
+      //   withCredentials: false,
+      //   success: res => {
+      //     wx.setStorage({
+      //       key: "img",
+      //       data: res.userInfo.avatarUrl
+      //     });
+      //     wx.setStorage({
+      //       key: "name",
+      //       data: res.userInfo.nickName
+      //     });
+          
+      //   },
+      //   fail: () => {
 
-              hxios.post('/sales_pack/quickbuy',{memberId:memberID,packId:id}).then(res=>{
-                // 订单号
-                this.orderNumber = res.data.data.orderNo
-                console.log(this.memberID);
-                
-                // 发请求
-                hxios.post('/sales_pack/topay',{modeCode:"WECHAT_MINI",orderNo:this.orderNumber,memberId:this.memberID,openId:this.openID}).then(res=>{
-                  console.log(res);
-              
-            })
-            
-          })
-            },
-            fail: () => { },
-            complete: () => { }
-          })
-        },
-        fail: () => { 
-          wx.showModal({
-            title: '提示', //提示的标题,
-            content: '没有登录,先去登录', //提示的内容,
-            showCancel: true, //是否显示取消按钮,
-            cancelText: '取消', //取消按钮的文字，默认为取消，最多 4 个字符,
-            cancelColor: '#000000', //取消按钮的文字颜色,
-            confirmText: '确定', //确定按钮的文字，默认为取消，最多 4 个字符,
-            confirmColor: '#3CC51F', //确定按钮的文字颜色,
+      //   },
+      //   complete: () => {  
+      //   }
+      // });
+
+      wx.getStorage({
+        key: "token",
+        success: res => {
+          wx.getStorage({
+            key: "token",
             success: res => {
-              if (res.confirm) {
-                wx.switchTab({ url: '/pages/mine/main' });
-              } else if (res.cancel) {
-                console.log('用户点击取消')
-              }
-            }
+              // openID
+              this.openID = res.data;
+              // 礼包Id
+              let id = this.giftId[index].toFixed();
+              // 用户Id
+              let memberID = this.memberID.toFixed();
+
+              hxios
+                .post("/sales_pack/quickbuy", {
+                  memberId: memberID,
+                  packId: id
+                })
+                .then(res => {
+                  console.log(res);
+                  
+                  // 订单号
+                  this.orderNumber = res.data.data.orderNo;
+
+                  // 发请求
+                  hxios
+                    .post("/sales_pack/topay", {
+                      modeCode: "WECHAT_MINI",
+                      orderNo: this.orderNumber,
+                      memberId: this.memberID,
+                      openId: this.openID
+                    })
+                    .then(res => {
+                      console.log(res);
+                      wx.requestPayment({
+                        timeStamp: res.data.data.payData.timeStamp, //时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间,
+                        nonceStr: res.data.data.payData.nonceStr, //随机字符串，长度为32个字符以下,
+                        package: res.data.data.payData.package, //统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=*,
+                        signType: res.data.data.payData.signType, //签名算法，暂支持 MD5,
+                        paySign: res.data.data.payData.paySign, //签名,具体签名方案参见小程序支付接口文档,
+                        success: res => {
+                          console.log(res);
+                          
+                        },
+                        fail: () => {},
+                        complete: () => {}
+                      });
+                    });
+                });
+            },
+            fail: () => {},
+            complete: () => {}
           });
         },
-        complete: () => { }
-      })
+        fail: () => {
+          console.log(111);
+          
+          wx.login({
+            success: res => {
+              // console.log(res);
+              this.code = res.code;
+              hxios
+                .post("/wechat_mini/userlogin", { code: this.code })
+                .then(res => {
+                  console.log(res);
+                  wx.setStorage({
+                    key: "用户ID",
+                    data: res.data.data.memberId
+                  });
+                  wx.setStorage({
+                    key: "token",
+                    data: res.data.data.openId,
+                  });
+                });
+            },
+            fail: () => {},
+            complete: () => {}
+          });
+        },
+        complete: () => {}
+      });
     }
-
   },
   onLoad() {
     // 获取memberID
     wx.getStorage({
-      key: '用户ID',
-      success: (res) => {
-        
-        this.memberID = res.data
+      key: "用户ID",
+      success: res => {
+        this.memberID = res.data;
       },
-      fail: () => { },
-      complete: () => { }
-    })
-    
-      // 页面加载的时候.默认索引等于0
-    this.selectedIndex = 0
-      hxios.post("/index/ppt").then(res => {
+      fail: () => {},
+      complete: () => {}
+    });
+
+    // 页面加载的时候.默认索引等于0
+    this.selectedIndex = 0;
+    hxios.post("/index/ppt").then(res => {
       // 轮播图图片
-        this.swiperList = res.data.data;
+      this.swiperList = res.data.data;
     }),
-      hxios.post('/index/packs').then(res=>{
+      hxios.post("/index/packs").then(res => {
         // console.log(res);
-        
+
         // 推荐礼包
-        this.recommend = res.data.data
+        this.recommend = res.data.data;
         // console.log(this.recommend);
-        
-        var arr = []
+
+        var arr = [];
         this.recommend.forEach(element => {
-         arr.push(element.packId)
+          arr.push(element.packId);
         });
         // 礼包详情id
-        this.giftId = arr
+        this.giftId = arr;
         console.log(this.giftId);
-        
-        
-      })
-      hxios.post('/index/packs',{sort:'new'}).then(res=>{
-        // 最新礼包
-        this.newList = res.data.data
+      });
+    hxios.post("/index/packs", { sort: "new" }).then(res => {
+      // 最新礼包
+      this.newList = res.data.data;
+    });
+    // hxios.post('/index/packs',{sort:'hot'}).then(res=>{
+    //   // 人气礼包
+    //   this.hotList = res.data.data
+    //   // console.log(this.hotList);
 
-      })
-      // hxios.post('/index/packs',{sort:'hot'}).then(res=>{
-      //   // 人气礼包
-      //   this.hotList = res.data.data
-      //   // console.log(this.hotList);
-        
-      //   var arr = []
-      //   this.hotList.forEach(element => {
-      //     // console.log(element.packId);
-          
-      //    arr.push(element.packId)
-      //   });
-      //   // 礼包详情id
-      //   this.giftId = arr
-      // })
-      hxios.post('/index/packs',{sort:'price',desc:0}).then(res=>{
-        // 最新礼包
-        // console.log(res);
-        
-        this.priceList = res.data.data
-      })
-      
-      
-    
+    //   var arr = []
+    //   this.hotList.forEach(element => {
+    //     // console.log(element.packId);
 
+    //    arr.push(element.packId)
+    //   });
+    //   // 礼包详情id
+    //   this.giftId = arr
+    // })
+    hxios.post("/index/packs", { sort: "price", desc: 0 }).then(res => {
+      // 最新礼包
+      // console.log(res);
+
+      this.priceList = res.data.data;
+    });
   },
   watch: {
-    selectedIndex:function(newQuestion, oldQuestion){
+    selectedIndex: function(newQuestion, oldQuestion) {
       // console.log(newQuestion);
-      if(newQuestion == 2){
-              hxios.post('/index/packs',{sort:'hot'}).then(res=>{
-        // 人气礼包
-        this.hotList = res.data.data
-        // console.log(this.hotList);
-        
-        var arr = []
-        this.hotList.forEach(element => {
-          // console.log(element.packId);
-          
-         arr.push(element.packId)
+      if (newQuestion == 2) {
+        hxios.post("/index/packs", { sort: "hot" }).then(res => {
+          // 人气礼包
+          this.hotList = res.data.data;
+          // console.log(this.hotList);
+
+          var arr = [];
+          this.hotList.forEach(element => {
+            // console.log(element.packId);
+
+            arr.push(element.packId);
+          });
+          // 礼包详情id
+          this.giftId = arr;
         });
-        // 礼包详情id
-        this.giftId = arr
-      })
-      }else if(newQuestion==0){
-              hxios.post('/index/packs').then(res=>{
-        // 推荐礼包
-        this.recommend = res.data.data
-        // console.log(this.recommend);
-        
-        var arr = []
-        this.recommend.forEach(element => {
-         arr.push(element.packId)
+      } else if (newQuestion == 0) {
+        hxios.post("/index/packs").then(res => {
+          // 推荐礼包
+          this.recommend = res.data.data;
+          // console.log(this.recommend);
+
+          var arr = [];
+          this.recommend.forEach(element => {
+            arr.push(element.packId);
+          });
+          // 礼包详情id
+          this.giftId = arr;
+          // console.log(this.giftId);
         });
-        // 礼包详情id
-        this.giftId = arr
-        // console.log(this.giftId);
-        
-        
-      })
       }
       // console.log(oldQuestion);
-      
     },
-    isUp:function(newQuestion,oldQuestion){
+    isUp: function(newQuestion, oldQuestion) {
       console.log(newQuestion);
-      if(newQuestion==true){
+      if (newQuestion == true) {
         // 升序发起请求
-         hxios.post('/index/packs',{sort:'price',desc:0}).then(res=>{
-        // 最新礼包
-        // console.log(res);
-        
-        this.priceList = res.data.data
-      })
-      }else if(newQuestion==false){
-                 hxios.post('/index/packs',{sort:'price',desc:1}).then(res=>{
-        // 最新礼包
-        // console.log(res);
-        
-        this.priceList = res.data.data
-      })
+        hxios.post("/index/packs", { sort: "price", desc: 0 }).then(res => {
+          // 最新礼包
+          // console.log(res);
+
+          this.priceList = res.data.data;
+        });
+      } else if (newQuestion == false) {
+        hxios.post("/index/packs", { sort: "price", desc: 1 }).then(res => {
+          // 最新礼包
+          // console.log(res);
+
+          this.priceList = res.data.data;
+        });
       }
     }
-  },
+  }
 };
 </script>
 

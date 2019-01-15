@@ -18,14 +18,16 @@
       <button
         open-type="getUserInfo"
         @getuserinfo="userInfo"
-      > <img
+        v-show="buttonIndex==0"
+      >{{userName}}</button>
+       <img
           :src="userImg"
           altgit
           class="icon"
           @tap="login"
-        ></button>
+        >
 
-      <div class="name">{{userName}}</div>
+      <div class="name" v-show="buttonIndex==1">{{userName}}</div>
     </div>
     <div class="card">
       <div
@@ -38,14 +40,20 @@
         >
         <span>未使用</span>
       </div>
-      <div class="used" @click="goUse">
+      <div
+        class="used"
+        @click="goUse"
+      >
         <img
           src="/static/image/user.png"
           alt
         >
         <span>已使用</span>
       </div>
-      <div class="dated" @click="goUpdated">
+      <div
+        class="dated"
+        @click="goUpdated"
+      >
         <img
           src="/static/image/yiguoqi.png"
           alt
@@ -114,27 +122,82 @@ export default {
       userName: "登录",
       code: "",
       // 用户ID
-      memberID:0,
+      memberID: 0,
       // 未使用的卡券的个数
-      card:0
+      card: 0,
+      buttonIndex:0
     };
   },
   onLoad() {
+    
     wx.getStorage({
-      key: '用户ID',
-      success: (res) => {
-        // 用户ID
-        this.memberID = res.data
-        hxios.post('/member_consume/itemlist',{memberId:this.memberID,status:"usable"}).then(res=>{
-          this.card = res.data.data.length
-           console.log(this.card);
-          
-    })
+      key: "img",
+      success: res => {
+        this.userImg = res.data;
       },
-      fail: () => { },
-      complete: () => { }
-    })
-
+      fail: () => {},
+      complete: () => {}
+    });
+    wx.getStorage({
+      key: "name",
+      success: res => {
+        this.userName = res.data;
+        console.log(res.data);
+      },
+      fail: () => {},
+      complete: () => {}
+    });
+  },
+  onShow() {
+    this.buttonIndex = 0
+    wx.getStorage({
+      key: "用户ID",
+      success: res => {
+        // 用户ID
+        this.memberID = res.data;
+        hxios
+          .post("/member_consume/itemlist", {
+            memberId: this.memberID,
+            status: "usable"
+          })
+          .then(res => {
+            this.card = res.data.data.length;
+            console.log(this.card);
+          });
+      },
+      fail: () => {},
+      complete: () => {}
+    });
+    wx.getStorage({
+      key: "用户ID",
+      success: res => {
+        console.log(res.data);
+        wx.getStorage({
+          key: "img",
+          success: res => {
+            this.userImg = res.data;
+            wx.getStorage({
+              key: "name",
+              success: res => {
+                this.buttonIndex = 1;
+                this.userName = res.data;
+                console.log(res.data);
+              },
+              fail: () => {},
+              complete: () => {}
+            });
+          },
+          fail: () => {},
+          complete: () => {}
+        });
+      },
+      fail: () => {
+        this.userName = "登录";
+        this.userImg =
+          "http://img3.imgtn.bdimg.com/it/u=1248345049,109226570&fm=26&gp=0.jpg";
+      },
+      complete: () => {}
+    });
   },
   methods: {
     getPhoneNumber(e) {
@@ -157,15 +220,17 @@ export default {
 
     // 获取用户信息
     userInfo(e) {
+      this.buttonIndex = 1;
       console.log(e);
       wx.login({
         success: res => {
-          console.log(res);
+          // console.log(res);
           this.code = res.code;
           hxios
             .post("/wechat_mini/userlogin", { code: this.code })
             .then(res => {
               console.log(res);
+
               wx.setStorage({
                 key: "用户ID",
                 data: res.data.data.memberId
@@ -183,19 +248,37 @@ export default {
       this.userImg = e.target.userInfo.avatarUrl;
       // 用户名
       this.userName = e.target.userInfo.nickName;
+      wx.getStorage({
+        key: "用户ID",
+        success: res => {
+          // 用户ID
+          this.memberID = res.data;
+          hxios
+            .post("/member_consume/itemlist", {
+              memberId: this.memberID,
+              status: "usable"
+            })
+            .then(res => {
+              this.card = res.data.data.length;
+              console.log(this.card);
+            });
+        },
+        fail: () => {},
+        complete: () => {}
+      });
     },
 
     // 去我的卡券未使用
     goMineCard() {
-      wx.navigateTo({ url: "/pages/mineCard/main?index="+0 });
+      wx.navigateTo({ url: "/pages/mineCard/main?index=" + 0 });
     },
     // 去我的卡券已使用
-    goUse(){
-      wx.navigateTo({ url: '/pages/mineCard/main?index='+1 });
+    goUse() {
+      wx.navigateTo({ url: "/pages/mineCard/main?index=" + 1 });
     },
     // 去我的卡券已过期
-    goUpdated(){
-      wx.navigateTo({ url: '/pages/mineCard/main?index='+2 });
+    goUpdated() {
+      wx.navigateTo({ url: "/pages/mineCard/main?index=" + 2 });
     },
     // 去意见反馈
     goOpinion() {
@@ -260,22 +343,25 @@ page {
       height: 20px;
     }
     button {
-      width: 75px;
-      height: 75px;
-      border-radius: 50%;
-      top: 45px;
+      height: 30px;
+      line-height: 30px;;
+      background-color: #fff;
+      top: 120px;
       left: 50%;
       position: absolute;
       transform: translateX(-50%);
-      .icon {
-        border-radius: 50%;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 75px;
-        height: 75px;
-      }
+      background-color: transparent;
+      border:0px solid #3375d1;
+      color: #fff;
+    }
+    .icon{
+      position: absolute;
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .name,

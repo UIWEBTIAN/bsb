@@ -22,9 +22,9 @@
               <img :src="item.merchantLogo" alt>
               <div class="time">有效期至 : {{item.itemDeadline}}</div>
             </div>
-            <div class="footer">
-              <span class="show">使用条件 : {{item.itemRule}}</span>&nbsp&nbsp
-              <span @tap="show" class="more">∨</span>
+            <div class="footer" :class="{showMore:item.isShow}">
+              <span class="show" >使用条件 : {{item.itemRule}}</span>&nbsp&nbsp
+              <span @click="show(index)" class="more">∨</span>
             </div>
           </div>
           <!-- <div class="giftBag">
@@ -114,6 +114,13 @@ export default {
     goCardDetail(index){
       wx.navigateTo({ url: '/pages/shopsHXM/main?consumeId='+this.consumeId[index]});
     },
+    show(index){
+      let item = this.usable[index]
+
+      item.isshow = !item.isshow
+
+      this.$set(this.usable, index, item)
+    },
         // 返回上一页
     goBack(){
       wx.navigateBack({
@@ -128,7 +135,7 @@ export default {
        this.selectedIndex = option.index
      }else if(option.index==2){
        this.selectedIndex = option.index
-     }else{
+     }else if(option.index==0){
        this.selectedIndex = option.index
      }
     
@@ -144,8 +151,17 @@ export default {
         // console.log(this.userID);
         
         hxios.post('/member_consume/itemlist',{memberId:this.userID,status:'usable'}).then(res=>{
+          console.log(res);
+          
           // 未使用卡券
           this.usable = res.data.data;
+
+          // 循环添加false属性
+          this.usable.forEach(value=>{
+            value.isShow = false
+          })
+          // console.log(this.usable);
+          
           
           let arr = [];
           let array = []
@@ -297,6 +313,16 @@ ul {
           // text-overflow:ellipsis;
           white-space: nowrap;
         }
+        .showMore {
+        height: 50px;
+        overflow: visible;
+        white-space: normal;
+        .show {
+          overflow: visible;
+          // text-overflow:ellipsis;
+          white-space: normal;
+        }
+      }
         .more {
           font-size: 40rpx;
           position: absolute;

@@ -27,7 +27,7 @@
       <span class="more">></span>
     </div>
     <div class="logout">
-      <button>退出</button>
+      <button @click="logout">退出</button>
     </div>
   </div>
 </template>
@@ -54,6 +54,14 @@ export default {
         delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
       });
     },
+    // 退出
+    logout(){
+      wx.clearStorage({
+        success:function(){
+          wx.switchTab({ url: '/pages/mine/main' });
+        }
+      });
+    }
   },
   onLoad: function() {
     wx.getStorage({

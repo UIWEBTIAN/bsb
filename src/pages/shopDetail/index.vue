@@ -1,5 +1,10 @@
 <template>
   <div class="shopDetail">
+        <!-- 头部 -->
+    <div class="top">
+      <i class="iconfont goBack" @click="goBack">&#xe614;</i>
+      <span>商家详情</span>
+    </div>
     <!-- 轮播图 -->
     <div class="swiper">
       <swiper
@@ -263,6 +268,13 @@ export default {
         that.animationData = animation.export();
       }, 200);
     },
+    
+    // 返回上一页
+    goBack(){
+      wx.navigateBack({
+        delta: 1 //返回的页面数，如果 delta 大于现有页面数，则返回到首页,
+      });
+    },
     // 动画隐藏详情活动
     closeBox() {
       var that = this;
@@ -289,13 +301,13 @@ export default {
     // 获取导航位置
     location() {
       wx.getLocation({
-        type: "gcj02", //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于wx.openLocation的坐标,
+        type: "wgs84", //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于wx.openLocation的坐标,
         success: res => {
           console.log(res);
 
           console.info("getLocation success: ", res);
-          const latitude = res.latitude
-          const longitude = res.longitude
+          const latitude = 23.038907
+          const longitude = 113.774233
           const speed = res.speed;
           const accuracy = res.accuracy;
           
@@ -382,6 +394,30 @@ export default {
 <style lang="less">
 .shopDetail {
   position: relative;
+  padding-top: 70px;
+  // 头部
+.top{
+  position: fixed;
+  top: 0;
+  // left: 0;
+  z-index: 10;
+  height: 70px;
+  width: 100%;
+  background-color: #fff;
+  .goBack{
+    position: absolute;
+    top: 40%;
+    left: 10px;
+    font-size: 23px;
+  }
+  span{
+    position: absolute;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%,-50%);
+    
+  }
+}
   .footer-content{
     .shopInfo-content{
       text-indent:2em;
@@ -411,7 +447,7 @@ export default {
   .detailContentSmall {
     width: 95%;
     position: absolute;
-    top: 162px;
+    top: 232px;
     height: 297px;
     border-radius: 8px;
     background-color: #fff;
@@ -536,7 +572,7 @@ export default {
 // logo样式
 .storeLogo {
   position: absolute;
-  top: 118px;
+  top: 188px;
   left: 50%;
   transform: translateX(-50%);
   width: 69px;
